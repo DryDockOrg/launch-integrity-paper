@@ -1,0 +1,57 @@
+F1 sum of published weights: 90
+F1 share of attainable needed for the top band if the score were a plain sum: 77.8%
+F1 1 Oct, no wallet records: attainable 80, top band needs 70% of it; F3 activity share 37.5%
+F1 1 Oct, wallet records: attainable 90, top band needs 70% of it; F3 activity share 44.4%
+F1 7 Oct, no wallet records: attainable 85, top band needs 70% of it; F3 activity share 35.3%
+F1 7 Oct, wallet records: attainable 95, top band needs 70% of it; F3 activity share 42.1%
+F5 v1 (1 Oct) with measured insider share 8%: 82.94 of 90 points, score 92
+F5 v1 (1 Oct) with measured insider share 20%: 76.27 of 90 points, score 85
+F5 v1 (7 Oct) with measured insider share 8%: 87.94 of 95 points, score 93
+F5 v1 (7 Oct) with measured insider share 20%: 81.27 of 95 points, score 86
+F7 insider share 29.9%: score 79
+F7 insider share 30.1%: score 30
+F5 plain-sum reading of the published page, insider share 8%: 82.9
+F5 plain-sum reading of the published page, insider share 20%: 76.3
+P1 g=0.10 f=0.15 price drop 84%, quote drained 60%
+P1 g=0.10 f=0.20 price drop 89%, quote drained 67%
+P1 g=0.10 f=0.30 price drop 94%, quote drained 75%
+P1 g=0.10 insider share giving an 80% drop: 12.4%
+P1 g=0.20 f=0.15 price drop 67%, quote drained 43%
+P1 g=0.20 f=0.20 price drop 75%, quote drained 50%
+P1 g=0.20 f=0.30 price drop 84%, quote drained 60%
+P1 g=0.20 insider share giving an 80% drop: 24.7%
+P1 g=0.40 f=0.15 price drop 47%, quote drained 27%
+P1 g=0.40 f=0.20 price drop 56%, quote drained 33%
+P1 g=0.40 f=0.30 price drop 67%, quote drained 43%
+P1 g=0.40 insider share giving an 80% drop: 49.4%
+F11 page rule q=0.30 ['n=5: 0.163', 'n=10: 0.047', 'n=15: 0.050', 'n=20: 0.017', 'n=30: 0.006', 'n=40: 0.002', 'n=50: 0.001']
+F11 code rule q=0.30 ['n=5: 0.163', 'n=10: 0.047', 'n=15: 0.015', 'n=20: 0.017', 'n=30: 0.002', 'n=40: 0.001', 'n=50: 0.000']
+F11 page rule q=0.35 ['n=5: 0.235', 'n=10: 0.095', 'n=15: 0.113', 'n=20: 0.053', 'n=30: 0.030', 'n=40: 0.017', 'n=50: 0.010']
+F11 code rule q=0.35 ['n=5: 0.235', 'n=10: 0.095', 'n=15: 0.042', 'n=20: 0.053', 'n=30: 0.012', 'n=40: 0.008', 'n=50: 0.002']
+F11 page rule q=0.40 ['n=5: 0.317', 'n=10: 0.166', 'n=15: 0.213', 'n=20: 0.128', 'n=30: 0.097', 'n=40: 0.074', 'n=50: 0.057']
+F11 code rule q=0.40 ['n=5: 0.317', 'n=10: 0.166', 'n=15: 0.095', 'n=20: 0.128', 'n=30: 0.048', 'n=40: 0.039', 'n=50: 0.016']
+S5.8 n=5: cannot qualify
+S5.8 n=10: needs 10 wins; false positive 0.0000; power at q=.60 0.006
+S5.8 n=15: needs 12 wins; false positive 0.0005; power at q=.60 0.091
+S5.8 n=20: needs 15 wins; false positive 0.0003; power at q=.60 0.126
+S5.8 n=30: needs 19 wins; false positive 0.0014; power at q=.60 0.431
+S5.8 n=40: needs 24 wins; false positive 0.0011; power at q=.60 0.568
+S5.8 n=50: needs 28 wins; false positive 0.0019; power at q=.60 0.766
+S8 friction: 100 USDC returns 98.0
+S8 insider exit as one block, lower-bound set, 8%: insiders take 11118 USDC (44% of pool); reference returns 30.3; loss 69.7%
+   assumed pi=0.10 -> Integrity Score 93
+   assumed pi=0.30 -> Integrity Score 79
+   assumed pi=0.60 -> Integrity Score 58
+S8 insider exit as one block, pessimistic set, 20%: insiders take 16699 USDC (67% of pool); reference returns 10.9; loss 89.1%
+   assumed pi=0.10 -> Integrity Score 91
+   assumed pi=0.30 -> Integrity Score 73
+   assumed pi=0.60 -> Integrity Score 47
+S8 insider exit address by address, lower-bound set: reference returns 30.36
+S8 insider exit address by address, pessimistic set: reference returns 10.97
+S8 fees outside the pool: friction 98.0
+S8 fees outside the pool, exit of 8%: reference returns 30.5
+S8 fees outside the pool, exit of 20%: reference returns 11.0
+S7.5 bin rate 0.5 to within 5 points: n=385
+S7.5 bin rate 0.9 to within 5 points: n=139
+S7.5 AUC 0.75, N=500, prevalence 0.2: 95% half-width 0.059
+S7.5 AUC 0.75, N=2000, prevalence 0.2: 95% half-width 0.029

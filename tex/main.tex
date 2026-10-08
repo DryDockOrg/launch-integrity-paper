@@ -1,0 +1,89 @@
+\documentclass[11pt,a4paper]{article}
+
+% ------------------------------------------------------------------ packages
+\usepackage[margin=1.05in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{charter}
+\usepackage{courier}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[expansion=false]{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs,longtable,array,calc}
+\usepackage{etoolbox}
+\usepackage{pdflscape}
+\usepackage{graphicx,xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,decorations.pathreplacing,calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[title]{appendix}
+\usepackage{authblk}
+\usepackage[hidelinks]{hyperref}
+\usepackage{newunicodechar}
+\usepackage{xurl}
+\urlstyle{same}
+
+% ------------------------------------------------- unicode used in the prose
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{∧}{\ensuremath{\land}}
+\newunicodechar{Π}{\ensuremath{\Pi}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{∅}{\ensuremath{\varnothing}}
+\newunicodechar{⊕}{\ensuremath{\oplus}}
+\newunicodechar{∎}{\ensuremath{\blacksquare}}
+\newunicodechar{†}{\ensuremath{\dagger}}
+\newunicodechar{−}{\ensuremath{-}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{π}{\ensuremath{\pi}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{δ}{\ensuremath{\delta}}
+\newunicodechar{λ}{\ensuremath{\lambda}}
+\newunicodechar{σ}{\ensuremath{\sigma}}
+\newunicodechar{Φ}{\ensuremath{\Phi}}
+\newunicodechar{ⁿ}{\ensuremath{^{n}}}
+\newunicodechar{²}{\ensuremath{^{2}}}
+\newunicodechar{ₖ}{\ensuremath{_{k}}}
+
+% -------------------------------------------------------- pandoc compatibility
+\makeatletter\def\verbatim@font{\normalfont\footnotesize\ttfamily}\makeatother
+\providecommand{\tightlist}{\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0} % manual section numbers in the text are canonical
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\setlength{\emergencystretch}{3em}
+
+% -------------------------------------------------------------- theorem envs
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+% --------------------------------------------------------------------- meta
+\title{Calibrated Launch Integrity: A Verifiable,\\ Manipulation-Aware Scoring Protocol for Newly Launched Tokens}
+\author[1]{Farbod Ghasemlu}
+\affil[1]{Drydock Org \\ \texttt{farbodghasemlu@outlook.com} \\ ORCID: 0009-0009-2303-5672}
+\date{Working paper, version of 8 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\medskip
+\noindent\textbf{Keywords:} token launches, rug pulls, probabilistic forecasting, calibration, proper scoring rules, strategic classification, Sybil resistance, entity resolution, automated market makers, verifiable computation.
+
+\noindent\textbf{JEL:} G14, G18, G23, C53, D82.
+
+\medskip
+\noindent\emph{Working paper. Not peer reviewed.}
+
+\input{body}
+
+\end{document}
