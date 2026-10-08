@@ -16,7 +16,7 @@ We then specify v2. It replaces points with three quantities that carry units. T
 
 ### 1.1 The problem
 
-Most new tokens fail, and most fail fast. Xia et al. flagged over 10,000 scam tokens on Uniswap V2, roughly half of all listings \[5\]. Cernera et al. found that about 60% of tokens on Ethereum and BNB Chain are active for less than a day and estimated $240 million in profits from one-day rug pulls \[7\]. On Pump.fun, 0.63% of 655,770 tokens launched in September 2025 graduated, and 92.2% of tokens with at least 30 swaps showed a dump event \[10\]. An industry study reported by The Defiant put the share of Pump.fun launches that collapse at 98.6% \[14\].
+Most new tokens fail, and most fail fast. Xia et al. flagged over 10,000 scam tokens on Uniswap V2, roughly half of all listings \[5\]. Cernera et al. found that about 60% of tokens on Ethereum and BNB Chain are active for less than a day and estimated $240 million in profits from one-day rug pulls \[7\]. On Pump.fun, 0.63% of 655,770 tokens launched in September 2025 graduated, and 92.2% of tokens with at least 30 swaps showed a dump event \[10\]. An industry study found pump-and-dump characteristics in 98.6% of more than 7 million Pump.fun tokens with at least five trades between January 2024 and March 2025 \[14\].
 
 Buyers decide in seconds, so a single number does most of the work. That number is usually an additive point score built from heuristics. A survey of 14 rug-pull detection tools found they cover 25 of 34 known root causes and miss wash trading, hidden fees and fake liquidity locks \[8\]. We found no launch-scoring product that publishes calibration against outcomes.
 
@@ -46,7 +46,7 @@ Every number we computed is reproduced by the script in Appendix B. Parameters o
 
 ### 2.1 Measuring launch fraud
 
-The measurement literature agrees on scale and disagrees on labels. Xia et al. combined a guilt-by-association heuristic with a classifier and put the scam share of Uniswap V2 listings near 50% \[5\]. Mazorra et al. reported accuracy of 0.9936 for predicting malicious tokens before the malicious act \[6\]. A figure derived from that work, that 97.7% of Uniswap V2 tokens were rug pulls, was publicly contested, and the lead author said the paper's aim was detection method, not prevalence \[59\].
+The measurement literature agrees on scale and disagrees on labels. Xia et al. combined a guilt-by-association heuristic with a classifier and put the scam share of Uniswap V2 listings near 50% \[5\]. Mazorra et al. reported accuracy of 0.9936 for predicting malicious tokens before the malicious act \[6\]; their labels call a Uniswap V2 token malicious when it has had no transfer or reserve update for 30 days after losing nearly all of its liquidity or price without recovering, which yielded 26,957 malicious tokens against 631 labelled non-malicious. A figure derived from that work, that 97.7% of Uniswap V2 tokens were rug pulls, was publicly contested, and the lead author said the paper's aim was detection method, not prevalence \[59\].
 
 The lesson for a scoring system is that the outcome definition decides the headline. Naviglio et al. show a large share of new-token liquidity trapped in honeypots \[9\]. Mongardini and Mei studied 34,988 meme coins on four chains and found that 82.8% of tokens returning over 100% showed artificial growth, with extraction following earlier manipulation \[13\]. A score must therefore define its failure event mechanically, so that two parties with the same chain data label the same token the same way.
 
@@ -154,9 +154,9 @@ Appendix C keeps v1 runnable offline; it is the baseline B1 and B2 of Section 7.
 
 *Proposition 1 (pool-relative concentration).* In a constant-product pool \[55\] whose token reserve is a share *g* of total supply, an entity that sells a share *f* of total supply moves the marginal price to the multiple below and removes the stated fraction of the quote reserve, before fees.
 
-```latex
+$$
 \frac{P^{+}}{P} = \left(\frac{g}{g+f}\right)^{2}, \qquad \frac{\Delta x}{x} = \frac{f}{g+f}
-```
+$$
 
 *Proof.* With reserves *x* and *y* and invariant *xy = k*, the sale takes the token reserve from *gS* to *(g+f)S*, so the quote reserve falls to *x g/(g+f)*. The price *x/y* is multiplied by *(g/(g+f))²*. ∎
 
@@ -244,7 +244,7 @@ The design does not ask users to trust the platform's reported accuracy. It make
 
 The protocol publishes three layers and never adds them together. Layer 1 is facts computed by simulation. Layer 2 is forecasts of defined events, calibrated against outcomes. Layer 3 is a description of market activity that cannot move the score.
 
-&#91;embedded content: v2 pipeline · one input, three layers, a commit and resolve loop\]
+![Figure 3. The v2 pipeline. One block feeds three layers; only Layers 1 and 2 enter the record, and the market panel has no path into it. The dashed loop is the only route by which outcomes change later forecasts.](figures/figure-3.svg)
 
 The market panel receives the same block but has no arrow into the score. The loop at the bottom is the only path by which outcomes change later forecasts.
 
@@ -254,9 +254,9 @@ Every forecast is issued at a finalized block *h* for a horizon *H*. The primary
 
 Let *q* be the tokens that purchase returns, and let *Q(q)* be the USDC returned by selling them through the pool's own code, including fees and hooks. If the sale reverts, *Q* is zero. The round-trip recovery is
 
-```latex
+$$
 \rho_h = \frac{Q_h(q)}{100}
-```
+$$
 
 Three **structural events** are defined on the interval from *h* to *h + H*. Each is an on-chain occurrence that any two archive nodes will agree on. None requires a judgement about intent.
 
@@ -280,9 +280,9 @@ For each channel the system simulates the worst event available at block *h* and
 
 Write the recovery of the reference position after event *k* as ρ with superscript *k*. The **loss given event** and the **structural floor** are
 
-```latex
+$$
 \ell_k = 1 - \rho_h^{(k)}, \qquad \Phi_h = 100 \cdot \min_{k \in \{T, L, I\}} \rho_h^{(k)}
-```
+$$
 
 The floor reads directly: "in the worst single structural event available now, 100 USDC becomes Φ". Because the insider set is an interval, so is the floor. The baseline cost of entering and leaving with no event, 1 minus ρ, is reported beside it as friction.
 
@@ -324,9 +324,9 @@ Creator history uses a shrunk estimate. A creator cluster's prior event rate is 
 
 Each channel probability is a discrete-time hazard with monotone components:
 
-```latex
+$$
 \operatorname{logit} \pi_k(h, H) = \alpha_{k,\mathrm{pad}} + s_k(\mathrm{age}) + \sum_j m_{kj}(x_j), \qquad m_{kj} \ \text{non-decreasing}
-```
+$$
 
 The launchpad intercepts are partially pooled toward a common mean, so a launchpad with little history borrows strength from the others \[60\]. The age term is a baseline hazard. Tokens that have not reached their horizon are right-censored and handled as in survival analysis \[43\], and repeated forecasts for one token are evaluated at fixed ages by landmarking \[44\].
 
@@ -334,9 +334,9 @@ Monotonicity serves three purposes. Each feature has an interpretable direction.
 
 Under independent channel events and multiplicative recoveries, the expected recovery of the reference position is a product. The **Integrity Score** is that expectation on a 0 to 100 scale:
 
-```latex
+$$
 \mathrm{IS}_h = 100 \prod_{k \in \{T, L, I\}} \bigl(1 - \pi_k \, \ell_k\bigr)
-```
+$$
 
 The score has a unit: expected USDC remaining, per 100, after structural events over the horizon. It equals 100 when no event is likely or none would hurt. It falls toward the floor as the worst event becomes certain.
 
@@ -368,9 +368,9 @@ Market activity is shown beside the score and never inside it (R2). Price moment
 - **Depth.** Round-trip recovery of a 1,000 USDC position.
 - **Reference-class outcome.** The severe-loss frequency among earlier launches on the same launchpad at a similar age and floor grade, stated as counts.
 
-```latex
+$$
 N_{\mathrm{eff}} = \exp\Bigl(-\sum_i s_i \ln s_i\Bigr)
-```
+$$
 
 The reference-class line generalises v1's "base rates". It is written as a natural frequency, for example "of N earlier launches like this one, M returned 20 USDC or less per 100 after 24 hours", because readers reason more accurately from counts than from percentages \[51\].
 
@@ -571,6 +571,8 @@ Resolution at the end of the horizon is a deterministic function of chain state.
 
 A commitment shows that a forecast was made when claimed. It does not show that the forecast was computed correctly. Section 9.1 covers that.
 
+In DryDock's implementation the roots go to a ForecastLedger contract on Arc (Appendix A.4), one transaction every 600 blocks. A record counts as committed only if its root landed within 1,200 blocks of its forecast block; a record posted later is published and resolved like any other but is left out of the scoreboard. The records themselves, their leaves and their resolutions are published by batch, so anyone can recompute every leaf, check every root against the contract, and recompute the scoreboard.
+
 ### 9.3 Versioning
 
 A new model version runs in shadow first. Its forecasts are committed but not displayed until at least 1,000 have resolved. It is promoted only if it passes the ship criteria of Section 7.6 against the incumbent. Past forecasts keep the label of the version that issued them, and each change is logged with its reason.
@@ -666,13 +668,13 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 
 &#91;10\] G. Marino, M. Naviglio, F. Tarantelli, F. Lillo. Predicting the success of new crypto-tokens: the Pump.fun case. 2026. [arXiv:2602.14860](https://arxiv.org/abs/2602.14860)
 
-&#91;11\] W. Ding, Y. Luo, J. Xu. Decompose Market Manipulation Strategies: Evidence from On-chain Meme Coin Market. Working paper, Sydney Banking and Financial Stability Conference, 2025. [sbfc.sydney.edu.au](https://sbfc.sydney.edu.au/2025/papers/SBFC2025_4G3_P154.pdf)
+&#91;11\] W. Ding, Y. Luo, J. Xu. Decompose Market Manipulation Strategies: Evidence from On-chain Meme Coin Market. Working paper, Sydney Banking and Financial Stability Conference, 2025. [sbfc.sydney.edu.au](https://sbfc.sydney.edu.au/2025/papers/SBFC2025_4G3_P154.pdf). Later version with C. Lin as an additional author: SSRN 5953738. [papers.ssrn.com](https://papers.ssrn.com/abstract=5953738)
 
 &#91;12\] Y. Luo, Y. Feng, J. Xu, Y. Liu. Resisting Manipulative Bots in Meme Coin Copy Trading: A Multi-Agent Approach with Chain-of-Thought Reasoning. 2026. [arXiv:2601.08641](https://arxiv.org/abs/2601.08641)
 
 &#91;13\] A. M. Mongardini, A. Mei. A Midsummer Meme's Dream: Investigating Market Manipulations in the Meme Coin Ecosystem. 2025, revised 2026. [arXiv:2507.01963](https://arxiv.org/abs/2507.01963)
 
-&#91;14\] L. Jakobson. "Alarming" 99% of Memecoin Launches on PumpFun are Pump-and-Dumps or Rug Pulls: Report. The Defiant, 9 May 2025, reporting a Solidus Labs study. [thedefiant.io](https://thedefiant.io/news/defi/alarming-99-of-memecoin-launches-on-pumpfun-are-pump-and-dumps-or-rug-pulls-report)
+&#91;14\] Solidus Labs. The 2025 Rug Pull Report: Rug Pulls and Pump-and-Dumps on Solana. May 2025. [soliduslabs.com](https://www.soliduslabs.com/reports/solana-rug-pulls-pump-dumps-crypto-compliance). Reported by L. Jakobson, "Alarming" 99% of Memecoin Launches on PumpFun are Pump-and-Dumps or Rug Pulls: Report, The Defiant, 9 May 2025. [thedefiant.io](https://thedefiant.io/news/defi/alarming-99-of-memecoin-launches-on-pumpfun-are-pump-and-dumps-or-rug-pulls-report)
 
 &#91;15\] Pine Analytics. Exit Liquidity Machines: Dissecting Pump.fun Farming. 21 April 2025. [pineanalytics.substack.com](https://pineanalytics.substack.com/p/exit-liquidity-machines)
 
@@ -682,25 +684,25 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 
 &#91;18\] C. F. Torres, M. Steichen, R. State. The Art of the Scam: Demystifying Honeypots in Ethereum Smart Contracts. USENIX Security 2019.
 
-&#91;19\] S. Meiklejohn, M. Pomarole, G. Jordan, K. Levchenko, D. McCoy, G. M. Voelker, S. Savage. A Fistful of Bitcoins: Characterizing Payments Among Men with No Names. ACM Internet Measurement Conference 2013.
+&#91;19\] S. Meiklejohn, M. Pomarole, G. Jordan, K. Levchenko, D. McCoy, G. M. Voelker, S. Savage. A Fistful of Bitcoins: Characterizing Payments Among Men with No Names. ACM Internet Measurement Conference 2013, 127–140.
 
 &#91;20\] F. Victor. Address Clustering Heuristics for Ethereum. Financial Cryptography and Data Security 2020, Lecture Notes in Computer Science, 617–633. [doi:10.1007/978-3-030-51280-4\_33](https://doi.org/10.1007/978-3-030-51280-4_33)
 
-&#91;21\] J. R. Douceur. The Sybil Attack. International Workshop on Peer-to-Peer Systems (IPTPS) 2002.
+&#91;21\] J. R. Douceur. The Sybil Attack. International Workshop on Peer-to-Peer Systems (IPTPS) 2002, Lecture Notes in Computer Science 2429, 251–260.
 
 &#91;22\] C. F. Manski. Partial Identification of Probability Distributions. Springer, 2003.
 
 &#91;23\] G. W. Brier. Verification of forecasts expressed in terms of probability. Monthly Weather Review 78(1):1–3, 1950.
 
-&#91;24\] A. H. Murphy. A new vector partition of the probability score. Journal of Applied Meteorology 12(4):595–600, 1973.
+&#91;24\] A. H. Murphy. A new vector partition of the probability score. Journal of Applied Meteorology 12(4):595–600, 1973. [doi:10.1175/1520-0450(1973)012<0595:ANVPOT>2.0.CO;2](https://doi.org/10.1175/1520-0450(1973)012%3C0595:ANVPOT%3E2.0.CO;2)
 
 &#91;25\] T. Gneiting, A. E. Raftery. Strictly proper scoring rules, prediction, and estimation. Journal of the American Statistical Association 102(477):359–378, 2007.
 
-&#91;26\] J. C. Platt. Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods. In Advances in Large Margin Classifiers, MIT Press, 1999.
+&#91;26\] J. C. Platt. Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods. In Advances in Large Margin Classifiers, MIT Press, 2000, 61–74 (chapter listed by the publisher as "Probabilities for SV Machines").
 
-&#91;27\] B. Zadrozny, C. Elkan. Transforming classifier scores into accurate multiclass probability estimates. ACM SIGKDD 2002.
+&#91;27\] B. Zadrozny, C. Elkan. Transforming classifier scores into accurate multiclass probability estimates. ACM SIGKDD 2002, 694–699.
 
-&#91;28\] A. Niculescu-Mizil, R. Caruana. Predicting good probabilities with supervised learning. ICML 2005.
+&#91;28\] A. Niculescu-Mizil, R. Caruana. Predicting good probabilities with supervised learning. ICML 2005, 625–632.
 
 &#91;29\] B. Van Calster, D. J. McLernon, M. van Smeden, L. Wynants, E. W. Steyerberg. Calibration: the Achilles heel of predictive analytics. BMC Medicine 17:230, 2019.
 
@@ -708,15 +710,15 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 
 &#91;31\] V. Vovk, I. Petej. Venn-Abers predictors. Uncertainty in Artificial Intelligence 2014. [arXiv:1211.0025](https://arxiv.org/abs/1211.0025)
 
-&#91;32\] I. Gibbs, E. Candès. Adaptive conformal inference under distribution shift. NeurIPS 2021.
+&#91;32\] I. Gibbs, E. Candès. Adaptive conformal inference under distribution shift. Advances in Neural Information Processing Systems 34 (NeurIPS 2021), 1660–1672.
 
-&#91;33\] M. Hardt, N. Megiddo, C. Papadimitriou, M. Wootters. Strategic classification. Innovations in Theoretical Computer Science 2016.
+&#91;33\] M. Hardt, N. Megiddo, C. Papadimitriou, M. Wootters. Strategic classification. Innovations in Theoretical Computer Science 2016, 111–122.
 
-&#91;34\] J. Kleinberg, M. Raghavan. How do classifiers induce agents to invest effort strategically? 2018. [arXiv:1807.05307](https://arxiv.org/abs/1807.05307). Journal version in ACM Transactions on Economics and Computation, 2020 (venue details not confirmed).
+&#91;34\] J. Kleinberg, M. Raghavan. How do classifiers induce agents to invest effort strategically? ACM Transactions on Economics and Computation 8(4), article 19, 2020. [doi:10.1145/3417742](https://doi.org/10.1145/3417742). Conference version: ACM EC 2019, 825–844; [arXiv:1807.05307](https://arxiv.org/abs/1807.05307).
 
 &#91;35\] J. C. Perdomo, T. Zrnic, C. Mendler-Dünner, M. Hardt. Performative prediction. ICML 2020.
 
-&#91;36\] C. A. E. Goodhart. Problems of monetary management: the U.K. experience. Papers in Monetary Economics, Reserve Bank of Australia, 1975.
+&#91;36\] C. A. E. Goodhart. Problems of monetary management: the U.K. experience. Papers in Monetary Economics, Reserve Bank of Australia, 1975. Reprinted in Monetary Theory and Practice, Macmillan, 1984, 91–121.
 
 &#91;37\] M. Nardo, M. Saisana, A. Saltelli, S. Tarantola, A. Hoffmann, E. Giovannini. Handbook on Constructing Composite Indicators: Methodology and User Guide. OECD, 2008.
 
@@ -730,7 +732,7 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 
 &#91;42\] B. Efron, C. Morris. Data analysis using Stein's estimator and its generalizations. Journal of the American Statistical Association 70(350):311–319, 1975.
 
-&#91;43\] D. R. Cox. Regression models and life-tables. Journal of the Royal Statistical Society B 34(2):187–220, 1972.
+&#91;43\] D. R. Cox. Regression models and life-tables. Journal of the Royal Statistical Society B 34(2):187–202, 1972.
 
 &#91;44\] H. C. van Houwelingen. Dynamic prediction by landmarking in event history analysis. Scandinavian Journal of Statistics 34(1):70–85, 2007.
 
@@ -748,7 +750,7 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 
 &#91;51\] G. Gigerenzer, U. Hoffrage. How to improve Bayesian reasoning without instruction: frequency formats. Psychological Review 102(4):684–704, 1995.
 
-&#91;52\] P. Bolton, X. Freixas, J. Shapiro. The credit ratings game. Journal of Finance 67(1):85–112, 2012.
+&#91;52\] P. Bolton, X. Freixas, J. Shapiro. The credit ratings game. Journal of Finance 67(1):85–111, 2012. [doi:10.1111/j.1540-6261.2011.01708.x](https://doi.org/10.1111/j.1540-6261.2011.01708.x)
 
 &#91;53\] H. Adams, N. Zinsmeister, M. Salem, R. Keefer, D. Robinson. Uniswap v3 Core. Whitepaper, March 2021. [uniswap.org/whitepaper-v3.pdf](https://uniswap.org/whitepaper-v3.pdf)
 
@@ -764,25 +766,26 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 
 &#91;59\] Blockworks. Are 97% of Tokens on Uniswap Really Rug Pulls? 2 November 2022. [blockworks.com](https://blockworks.com/news/are-97-of-tokens-on-uniswap-really-rug-pulls)
 
-&#91;60\] A. Gelman, J. Hill. Data Analysis Using Regression and Multilevel/Hierarchical Models. Cambridge University Press, 2007.
+&#91;60\] A. Gelman, J. Hill. Data Analysis Using Regression and Multilevel/Hierarchical Models. Cambridge University Press, 2007 (published December 2006).
 
 ### Verification note
 
-Every reference was checked on 7 October 2026, to the differing degrees listed below. A reader should weigh them accordingly.
+Every reference was checked on 7 October 2026, and the checks the first version listed as open were completed on 8 October 2026, to the differing degrees listed below. A reader should weigh them accordingly.
 
-- **Full text fetched and read:** \[1\] to \[4\], \[10\], \[11\], \[12\], \[53\], \[54\].
-- **Abstract, article or publisher page fetched and read:** \[5\] to \[9\], \[13\], \[15\], \[16\], \[18\], \[31\], \[35\], \[55\], \[59\], the Stablecoin Insider item of \[57\] and the Solana Tracker item of \[58\].
-- **Bibliographic details matched against a Crossref or RePEc record:** \[17\], \[20\], \[22\], \[23\], \[39\], \[40\], \[44\], \[46\], \[48\], \[49\], \[52\].
-- **Existence, authors, title and venue confirmed by search; volume and page numbers not independently confirmed:** \[19\], \[21\], \[25\] to \[30\], \[32\], \[33\], \[36\], \[37\], \[38\], \[41\], \[42\], \[43\], \[45\], \[47\], \[50\], \[51\], \[56\], \[60\].
-- **Still unconfirmed:** \[24\], for which search returned only works that cite it; the journal venue of \[34\], whose arXiv version is confirmed; the body of \[14\], whose headline, author and date loaded but whose text did not; the DEXTools item of \[58\]; and the Coin360 and Decrypt items of \[57\], read only as search excerpts.
+- **Full text fetched and read:** \[1\] to \[4\], \[6\] (the labelling method, Section 6 of the arXiv version), \[10\], \[11\] (the conference version), \[12\], \[14\] (the Solidus Labs report's web page), \[53\], \[54\].
+- **Abstract, article or publisher page fetched and read:** \[5\], \[7\] to \[9\], \[13\], \[15\], \[16\], \[18\], \[31\], \[35\], \[55\], \[59\], the Stablecoin Insider item of \[57\], the Solana Tracker item of \[58\], and the SSRN listing of \[11\].
+- **Bibliographic details matched against a Crossref record (volume, issue and pages as deposited by the publisher):** \[17\], \[19\], \[21\], \[24\], \[25\], \[26\], \[27\], \[28\], \[29\], \[30\], \[33\], \[34\], \[36\] (the 1984 reprint), \[37\], \[38\], \[41\], \[42\], \[43\], \[47\], \[50\], \[51\], \[52\], \[56\], \[60\]. Matched against a Crossref or RePEc record in the first round of checks: \[20\], \[22\], \[23\], \[39\], \[40\], \[44\], \[46\], \[48\], \[49\].
+- **Matched against the proceedings publisher's own record:** \[32\] (NeurIPS proceedings, volume 34, pages 1660 to 1672).
+- **Existence, authors, title and venue confirmed by search only:** \[45\] (a book, cited without pages) and the DEXTools item of \[58\], whose page appears in search results with the description quoted in Section 2.7 but returned HTTP 404 to a direct request on 8 October 2026.
+- **Read only as search excerpts:** the Coin360 and Decrypt items of \[57\].
 
-The check found no wrong attribution and changed one detail: RePEc lists \[52\] at pages 85 to 112, where the first draft had 85 to 111. Lookups through Crossref, OpenAlex, Europe PMC and PubMed were rate-limited or blocked, which is why page numbers in the fourth group remain unconfirmed.
+The completed checks changed six details. \[24\] is confirmed. \[34\] has a journal version, ACM Transactions on Economics and Computation 8(4), 2020. \[43\] runs to page 202; the first version's 220 included the published discussion. \[26\] appeared in 2000 at pages 61 to 74, under the chapter title "Probabilities for SV Machines". \[14\] now cites the Solidus Labs report itself, which gives 98.6% for Pump.fun tokens with at least five trades. \[52\]: the first version had 85 to 111 and its verification note changed this to 85 to 112 from RePEc; the publisher's Crossref deposit gives 85 to 111, which is restored (the publisher's page refused automated requests). Lookups through OpenAlex, Europe PMC and PubMed were not needed.
 
-Three cautions still apply. The labelling method of \[6\] was not re-read and is described only in general terms. \[14\] is a news report of an industry study whose primary text was not read. \[11\] is a working paper, and its author list differs between the conference version cited here and the SSRN listing cited by \[12\].
+Two cautions still apply. \[14\] is an industry report whose method is described only on its web page. \[11\] is a working paper whose author list differs between versions: the conference paper cited here lists Ding, Luo and Xu; the later SSRN version adds Chen Lin.
 
 ## Appendix A. Normative specification
 
-This appendix fixes the definitions an implementer needs. Where it conflicts with the body, the appendix governs. Every default is subject to the sensitivity analyses of Section 7.7.
+This appendix fixes the definitions an implementer needs. Where it conflicts with the body, the appendix governs. Every default is subject to the sensitivity analyses of Section 7.7. This is version 2.0.1, the specification DryDock runs; entries marked † changed from the first version of the paper, for the reasons given in Section 7.8. Its keccak-256 hash enters every record as `spec_hash`.
 
 ### A.1 Constants and defaults
 
@@ -790,83 +793,128 @@ This appendix fixes the definitions an implementer needs. Where it conflicts wit
 | --- | --- | --- |
 | B | Reference notional | 100 USDC; 1,000 USDC for the depth line |
 | H | Horizons | 24 hours primary; 1 hour and 7 days secondary |
-| Landmarks | Token ages at which forecasts are evaluated | 1 min, 10 min, 1 h, 6 h, 24 h |
+| Landmarks | Token ages after the first swap at which forecasts are issued and evaluated | 1 min, 10 min, 1 h, 6 h, 24 h; the forecast block is the first block whose timestamp reaches the landmark |
 | δ\_T | Recovery drop that defines a tradability event | 20 points |
 | λ\_L | Share of quote-side liquidity withdrawn that defines a liquidity event | 50% |
 | σ\_I | Share of the pessimistic set's tokens net-sold that defines an insider exit | 50% |
 | Severe loss | All-cause endpoint for the market panel | Reference position returns 20 USDC or less at the horizon |
 | W | Launch window for the independence test | 20 blocks, about 10 seconds, as in v1 \[1\] |
 | d | Funding-path depth for the lower-bound set | 3 hops |
-| Funding lookback | Period before a first purchase in which funding is traced | 7 days |
-| History margin | Minimum address history for independence | 30 days and 10 transactions before token creation |
+| Funding lookback † | Window before a wallet's first purchase that every edge of its funding path must fall in | 86,400 blocks, about 12 hours |
+| Materiality † | A transfer links two wallets only if it carried at least this share of what the recipient then spent (its first purchase) or forwarded (the next edge on the path) | 50% |
+| History margin | Minimum address history for independence: transactions sent (nonce) at least 1 at the block 30 days before token creation and at least 10 at the block before creation | 30 days and 10 transactions |
 | Dust | Transfers below this never create a link | 1 USDC |
-| Minimum evidence | Below this the state is "too early" | 120 blocks of age and 10 entities outside the lower-bound set |
+| Minimum evidence † | Below this the state is "too early" | 60 seconds of block time since creation, and 10 entities outside the lower-bound set |
 | Interval width | Above this the state is "low confidence" | 0.40 |
 | Commit interval | Blocks between Merkle-root postings | 600 blocks, about 5 minutes |
+| Commitment deadline † | A record counts as committed only if its root was posted within this many blocks of its forecast block | 1,200 blocks |
+| Individual sellers † | Insiders sold one by one in the exit simulation; the rest of a larger set is sold as one block | 100 |
 | Shadow length | Resolved forecasts before a version can be promoted | 1,000 |
 
 ### A.2 Simulation of losses
 
-1. Fork Arc state at finalized block *h*.
-2. From a fresh address, buy *B* USDC of the token through its main pool. Record the tokens received, *q*. Snapshot the state.
-3. **Friction.** Sell *q*. Record the USDC returned, then restore the snapshot.
-4. **Tradability.** For each privileged role, impersonate its holder and set each parameter to the worst value the code allows without a timelock longer than *H*. Sell *q*, record, restore. If any reachable call cannot be bounded, record zero and set the flag "unbounded".
-5. **Liquidity.** For each position that its owner can withdraw within *H*, impersonate the owner and withdraw. Sell *q*, record, restore.
-6. **Insider exit.** For each address in the insider set, in descending order of balance, sell its full balance through the pool. Sell *q*, record, restore. Run once for the lower-bound set and once for the pessimistic set.
-7. A reverted sale records zero. Each loss given event is 1 minus the recorded amount divided by *B*.
+1. Take Arc state at finalized block *h*. Each scenario is a separate `eth_call` at *h* (or several scenarios in one call, each isolated in a reverting sub-call), so every scenario starts from the same state.
+2. Place the simulator's runtime code, by state override, at a fresh address and at every address that acts in the scenario. Code placed at an address acts as that address: the pool, its hook, the position managers and the token apply their own rules to the real owner.
+3. From the fresh address, buy *B* USDC of the token through its main pool. Record the tokens received, *q*.
+4. **Friction.** Sell *q*. Record the USDC returned.
+5. **Tradability.** For each privileged role in the registry, act as its holder and set each parameter to the worst value the code allows without a timelock longer than *H*. Sell *q*, record. If the token or the hook is not a registered template, record zero, set the flag "unbounded" and the state "unobservable". A scenario with no step returns the friction result.
+6. **Liquidity.** For each position whose owner is neither burned nor a recognised lock (registry), act as the owner and withdraw it: `decreaseLiquidity` and `collect` for a V3 position NFT, `modifyLiquidities` for a V4 position NFT, `burn` and `collect` or a PoolManager unlock for a direct position. Sell *q*, record.
+7. **Insider exit.** For each address in the insider set, in descending order of balance, sell its full balance through the pool. Beyond the first 100 addresses, credit the remaining balance to one further seller by a storage override of the token's balance mapping and sell it in one block. Sell *q*, record. Run once for the lower-bound set and once for the pessimistic set.
+8. A reverted sale records zero; a reverted event step is recorded as not taken. Each loss given event is 1 minus the recorded amount divided by *B*. If the purchase in step 3 reverts, the state is "unobservable".
 
-### A.3 Forecast record and commitment
+### A.3 Entity resolution
+
+1. **Activity.** From the token's transfers up to *h*: in a transaction with a transfer out of the market (the V3 pool or the V4 PoolManager), wallets whose balance rose purchased; in one with a transfer into the market, wallets whose balance fell sold; any other rise is an off-market receipt, credited to the transaction's largest sender. Registry hubs, lockers, the hook, the token and burn addresses are infrastructure, not wallets.
+2. **Seeds.** The creator, wallets that purchased in the launch block, and recipients of off-market receipts from the creator or a launchpad contract before their first purchase.
+3. **Links.** Funding: a USDC transfer of at least 1 USDC from a non-hub sender, inside the recipient's lookback window, carrying at least half of what the recipient then spent or forwarded, traced back up to *d* hops; the wallet is linked to every ancestor. Receipts: an off-market receipt before a first purchase links recipient and sender. Proceeds: a USDC transfer of at least 1 USDC to a non-hub address, after a sale, carrying at least half of the sale proceeds so far, links seller and recipient.
+4. **Lower-bound set.** Holders at *h* in a component of the link graph that contains a seed.
+5. **Pessimistic set.** The lower-bound set plus every holder that fails any of: the history margin; a first purchase more than *W* blocks after the launch block; funding that is not only from fresh unlabelled addresses (at least one direct funder is a hub or passes the history margin, or there is no direct funder).
+6. **Entities.** Purchasers outside the lower-bound set, grouped by component of the link graph.
+
+### A.4 Forecast record and commitment
 
 ```
 record = {
-  token, pool, block_h, horizon,
+  token, pool, block_h, landmark, horizon,
   spec_hash, params_hash, registry_hash,
   friction, loss_T, loss_L, loss_I_lower, loss_I_pessimistic,
   floor_low, floor_high,
   pi_T: [low, high], pi_L: [low, high], pi_I: [low, high],
   score: [low, high],
-  state            // rated | too_early | unobservable | low_confidence
+  state,           // rated | too_early | unobservable | low_confidence
+  model            // version of the model that issued the probabilities; zero at Stage 0
 }
-leaf = keccak256(canonical_encoding(record))
-root = merkle_root(all leaves issued in the commit interval)   // posted to Arc
+leaf = keccak256(keccak256(abi.encode(record)))
+root = merkle_root(all leaves issued since the last root)   // sorted pairs; posted to the ForecastLedger on Arc
 ```
 
-At Stage 0 the probability and score fields are null. The same schema is used at every stage, so the committed history is continuous across upgrades.
+Fractions and probabilities are encoded as parts per million and USDC per 100 as micro-USDC per 100, in fixed-width unsigned integers; `0xffffffff` encodes null. At Stage 0 the probability and score fields are null, and the losses and floors are null unless the state is "rated". The same schema is used at every stage, so the committed history is continuous across upgrades. The ForecastLedger (`0xC63FA005E73bED90443A1Ffc9e363f573F04Cf23`) stores each root with the block range of its records and the block in which it was posted; it accepts roots only from the committer and can be enumerated with `count()` and `commitment(i)`.
 
-### A.4 Resolution
+### A.5 Resolution
 
-1. For each committed record, replay blocks from *h* + 1 to *h* + *H*.
-2. Evaluate the three event rules of Section 5.1. Record which fired and the first block at which each fired.
-3. For each event that fired, recompute the reference position's recovery in the state immediately before and immediately after that block. Their ratio is the realised structural recovery for that event.
-4. Sell the reference position in the state at *h* + *H*. Record severe loss if it returns 20 USDC or less.
-5. Publish the resolution with the record's inclusion proof. Aggregate into the scoreboard.
+1. For each record, take the first block *e* whose timestamp is at least that of *h* plus *H*.
+2. Insider exit fires at the first transfer in (*h*, *e*] at which the pessimistic set's tokens sent to the market or to addresses outside the set, less tokens bought from the market, reach σ\_I of its balance at *h*.
+3. Liquidity fires at the first removal in (*h*, *e*] at which the quote-side amounts removed by position owners reach λ\_L of the quote-side liquidity at *h* (the V3 pool's USDC balance, or the USDC held by the V4 positions at the pool price).
+4. Tradability fires if the reference position cannot be sold at *e* while the pool still holds quote liquidity, or if a privileged state change in (*h*, *e*] lowers the simulated recovery by δ\_T points. No registered template has such a privilege, so only the first route applies to registered templates.
+5. For each event that fired, sell the reference position (held through a storage override of the token's balance mapping) in the state at the block before and at the firing block. Their ratio, times 100, is the realised structural recovery.
+6. Sell the reference position at *e*. Record severe loss if it returns 20 USDC or less.
+7. Publish the resolution with the record. The scoreboard aggregates only records committed within the deadline.
 
-### A.5 Reporting checklist
+### A.6 Reporting checklist
 
 Each scoreboard release states: the specification and registry versions; the date range and count of resolved forecasts by launchpad and landmark; event counts by channel; Brier and logarithmic scores with Murphy components; calibration slope and intercept; reliability diagrams; ROC and precision-recall areas; interval coverage; abstention rate by reason; grade distribution by launchpad; and every comparison against B0 and B1 with its interval.
 
 ## Appendix B. Reproducibility
 
-The script below reproduces every number computed in this paper. It needs Python 3 with numpy and scipy and reads no external data. The one modelling assumption about v1, linear interpolation between published endpoints, is marked in the code.
+The script below reproduces every number in the paper that is computed rather than measured. It needs Python 3 with numpy and scipy and reads no data. It is `appendix_b.py` in the paper's repository, and its output is kept beside it as `analysis/output/appendix_b.txt`. The empirical numbers of Section 8 come from `analysis/results.py` and the released dataset (Appendix C).
 
 ```python
-# Reproduces every number computed in the paper. Requires numpy and scipy.
+# Reproduces every number computed in the paper other than the empirical results of Section 8, which
+# come from analysis/ and the released dataset. Requires Python 3 with numpy and scipy; reads no data.
 import numpy as np
 from scipy import stats
 
-# --- Section 3, F1: published v1 weights
+# --- Section 3, F1 and F3: v1 weights as published, and the normalisation the implementation applied
 w = dict(insider=15, top10=10, creator=10, liquidity=15, demand=20, momentum=10, smart=10)
 tot = sum(w.values())
-print('F1 sum of weights:', tot)
-print('F1 share of attainable needed for the top band: %.1f%%' % (100 * 70 / tot))
-print('F3 activity factors as share of attainable: %.1f%%' % (100 * 40 / tot))
+print('F1 sum of published weights:', tot)
+print('F1 share of attainable needed for the top band if the score were a plain sum: %.1f%%' % (100 * 70 / tot))
+# The code (DryDock v1, 1 October 2026) scored points over the points attainable, scaled to 100. Smart money
+# counted only when wallet records had loaded, so the attainable total was 80 or 90; on 7 October a
+# trading-costs factor (5) was added, giving 85 or 95.
+for label, attainable, activity in (('1 Oct, no wallet records', 80, 30), ('1 Oct, wallet records', 90, 40),
+                                    ('7 Oct, no wallet records', 85, 30), ('7 Oct, wallet records', 95, 40)):
+    print('F1 %s: attainable %d, top band needs 70%% of it; F3 activity share %.1f%%' % (label, attainable, 100 * activity / attainable))
 
-# --- Section 3, F5 and Section 8: v1 example. ASSUMPTION: linear between published endpoints
-def lin(v, full, zero, pts):
-    return pts * min(1, max(0, (zero - v) / (zero - full)))
+# --- Section 3, F5 and Section 8: the worked example under v1's real rule
+def scale(v, bad, good):
+    return min(1, max(0, (v - bad) / (good - bad)))
+def v1_points(insider, top10, version):
+    # Linear between endpoints (verified in the code); holders >= 25 so the 7 October breadth discount is 1.
+    p = 15 * scale(insider, .30, .03) + 10 * scale(top10, .50, .15)
+    p += 10                                   # creator: an earlier launch reached $100k
+    p += 10 * scale(np.log10(25000), np.log10(500), np.log10(25000)) + 5   # depth 25k USDC; custody held by the launchpad
+    p += 10 + 5 + 5                           # buyers >= 30, buy pressure >= 65%, organic volume
+    p += 10                                   # momentum at full marks
+    p += 10                                   # smart money: three winning wallets holding, no snipers
+    attainable = 90
+    if version == '7 Oct':
+        p += 5                                # trading costs: 1% pool fee each way plus the 0.5% swap fee, under 3%
+        attainable = 95
+    return p, attainable
+for version in ('1 Oct', '7 Oct'):
+    for ins in (0.08, 0.20):
+        p, a = v1_points(ins, .30, version)
+        print('F5 v1 (%s) with measured insider share %.0f%%: %.2f of %d points, score %d' % (version, 100 * ins, p, a, round(100 * p / a)))
+# F7: the cliff at the 30% insider cap (1 October code, wallet records loaded)
+for ins in (0.299, 0.301):
+    p, a = v1_points(ins, .30, '1 Oct')
+    print('F7 insider share %.1f%%: score %d' % (100 * ins, 30 if ins > .30 else round(100 * p / a)))
+# What the first version of the paper computed by assuming a plain sum of the published weights:
+lin = lambda v, full, zero, pts: pts * min(1, max(0, (zero - v) / (zero - full)))
 for ins in (0.08, 0.20):
-    s = lin(ins, .03, .30, 15) + lin(.30, .15, .50, 10) + 10 + 15 + 20 + 10 + 10
-    print('F5 v1 score with measured insider share %.0f%%: %.1f' % (100 * ins, s))
+    print('F5 plain-sum reading of the published page, insider share %.0f%%: %.1f'
+          % (100 * ins, lin(ins, .03, .30, 15) + lin(.30, .15, .50, 10) + 10 + 15 + 20 + 10 + 10))
 
 # --- Section 3, F6 (Proposition 1): constant-product exit impact
 for g in (.10, .20, .40):
@@ -875,10 +923,12 @@ for g in (.10, .20, .40):
               % (g, f, 100 * (1 - (g / (g + f)) ** 2), 100 * f / (g + f)))
     print('P1 g=%.2f insider share giving an 80%% drop: %.1f%%' % (g, 100 * g * (1 / np.sqrt(.2) - 1)))
 
-# --- Section 3, F11: v1 skill label under a no-skill null, P(wins > n/2)
+# --- Section 3, F11: v1's "profitable trader" label under a no-skill null. The code required at least 55%
+# of launches won (P&L marked to the current price) and more than $10 ahead; the page said "more than half".
 ns = (5, 10, 15, 20, 30, 40, 50)
 for q in (.30, .35, .40):
-    print('F11 q=%.2f' % q, ['n=%d: %.3f' % (n, stats.binom.sf(n // 2, n, q)) for n in ns])
+    print('F11 page rule q=%.2f' % q, ['n=%d: %.3f' % (n, stats.binom.sf(n // 2, n, q)) for n in ns])
+    print('F11 code rule q=%.2f' % q, ['n=%d: %.3f' % (n, stats.binom.sf(int(np.ceil(.55 * n)) - 1, n, q)) for n in ns])
 
 # --- Section 5.8: shrinkage rule, Beta prior mean .35 weight 20, label iff P(q > .40 | data) > .95
 q0, m = .35, 20
@@ -892,7 +942,7 @@ for n in ns:
     print('S5.8 n=%d: needs %d wins; false positive %.4f; power at q=.60 %.3f'
           % (n, kmin, stats.binom.sf(kmin - 1, n, q0), stats.binom.sf(kmin - 1, n, .6)))
 
-# --- Section 8: v2 facts for the worked example (constant product, fee stays in pool)
+# --- Section 8.1: v2 facts for the stylised example (constant product, fee retained in the pool)
 x0, g, phi, B, S = 25000.0, 0.10, 0.01, 100.0, 1e9
 def buy(x, y, usd):
     a = usd * (1 - phi); out = y * a / (x + a); return out, x + usd, y - out
@@ -903,10 +953,27 @@ print('S8 friction: 100 USDC returns %.1f' % sell(x1, y1, q)[0])
 for name, f in (('lower-bound set, 8%', .08), ('pessimistic set, 20%', .20)):
     got, x2, y2 = sell(x1, y1, f * S)
     r = sell(x2, y2, q)[0]
-    print('S8 insider exit, %s: insiders take %.0f USDC (%.0f%% of pool); reference returns %.1f; loss %.1f%%'
+    print('S8 insider exit as one block, %s: insiders take %.0f USDC (%.0f%% of pool); reference returns %.1f; loss %.1f%%'
           % (name, got, 100 * got / x1, r, 100 - r))
     for pi in (.10, .30, .60):
         print('   assumed pi=%.2f -> Integrity Score %.0f' % (pi, 100 * (1 - pi * (1 - r / 100))))
+# Appendix A.2 sells address by address, largest first. With the split of Section 8.1 (creator 4%, two
+# launch-block buyers 2% each; six fresh wallets 2% each) and fees retained in the pool:
+for name, parts in (('lower-bound set', [.04, .02, .02]), ('pessimistic set', [.04, .02, .02] + [.02] * 6)):
+    x, y = x1, y1
+    for f in sorted(parts, reverse=True):
+        _, x, y = sell(x, y, f * S)
+    print('S8 insider exit address by address, %s: reference returns %.2f' % (name, sell(x, y, q)[0]))
+# Uniswap V3 and V4 keep fees outside active liquidity; with fees outside the pool the same example gives:
+def sell_ext(x, y, tok):
+    a = tok * (1 - phi); out = x * a / (y + a); return out, x - out, y + a
+def buy_ext(x, y, usd):
+    a = usd * (1 - phi); out = y * a / (x + a); return out, x + a, y - out
+q2, xa, ya = buy_ext(x0, g * S, B)
+print('S8 fees outside the pool: friction %.1f' % sell_ext(xa, ya, q2)[0])
+for f in (.08, .20):
+    _, xb, yb = sell_ext(xa, ya, f * S)
+    print('S8 fees outside the pool, exit of %.0f%%: reference returns %.1f' % (100 * f, sell_ext(xb, yb, q2)[0]))
 
 # --- Section 7.5: sample sizes
 z = stats.norm.ppf(.975)
@@ -918,3 +985,7 @@ def se_auc(A, n1, n0):  # Hanley and McNeil (1982)
 for N in (500, 2000):
     print('S7.5 AUC 0.75, N=%d, prevalence 0.2: 95%% half-width %.3f' % (N, z * se_auc(.75, int(.2 * N), N - int(.2 * N))))
 ```
+
+## Appendix C. Data, code and v1
+
+The paper's repository holds the Markdown and LaTeX editions, the figures' sources, `appendix_b.py`, the analysis code (`analysis/`) with its output, and the dataset (`data/`): every launch on the covered launchpads since 16 September 2026 with whether it traded, every retrospective record with its facts, resolution and v1 scores, and every committed record published at the time of writing. The code that produced the records is a snapshot of DryDock's `lib/integrity` (the facts layer, records and resolver), `scripts/integrity` (discovery, the backfill store and runner) and `scripts/integrity/baselines/v1.ts` (v1's assessment as it ran on 1 and on 7 October 2026, kept runnable for the baselines B1 and B2), copied to `code/` at the DryDock commit named in its README. The retrospective records were produced by the same functions that issue live records; only the source of logs differs (a local store built from public Arc nodes instead of the nodes themselves).

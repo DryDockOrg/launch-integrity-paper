@@ -1,0 +1,24 @@
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[every node/.style={font=\small}, box/.style={draw, rounded corners=2pt, align=center, minimum height=11mm, inner sep=4pt, text width=40mm}, arrow/.style={-{Stealth[length=2mm]}}]
+\node[box, text width=24mm] (state) at (0,-2.2) {Arc state at a finalized block $h$};
+\node[box] (facts) at (4.6,0) {Layer 1: facts by simulation (floor, losses, friction)};
+\node[box] (prob) at (4.6,-2.2) {Layer 2: event probabilities, in shadow until the gates pass};
+\node[box] (panel) at (4.6,-4.4) {Layer 3: market panel (shown, never an input)};
+\node[box, text width=33mm] (record) at (11.6,-1.1) {Forecast record};
+\node[box, text width=33mm] (root) at (11.6,-2.9) {Merkle root posted to Arc};
+\node[box, text width=33mm] (resolve) at (11.6,-4.7) {Resolution at $h+H$ from chain state};
+\node[box, text width=33mm] (board) at (11.6,-6.5) {Scoreboard of committed records};
+\draw[arrow] (state.east) -- ++(0.5,0) |- (facts.west);
+\draw[arrow] (state.east) -- (prob.west);
+\draw[arrow] (state.east) -- ++(0.5,0) |- (panel.west);
+\draw[arrow] (facts.east) -- (record.west);
+\draw[arrow] ($(prob.east)+(0,0.3)$) -- (record.west);
+\draw[arrow] (record) -- (root);
+\draw[arrow] (root) -- (resolve);
+\draw[arrow] (resolve) -- (board);
+\draw[arrow, dashed] (board.west) -- ++(-1.2,0) node[below, font=\footnotesize] {recalibration} |- ($(prob.east)+(0,-0.3)$);
+\end{tikzpicture}
+\caption{The v2 pipeline. One block feeds three layers; only Layers 1 and 2 enter the record, and the market panel has no path into it. The dashed loop is the only route by which outcomes change later forecasts.}
+\label{fig:pipeline}
+\end{figure}
