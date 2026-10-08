@@ -34,13 +34,15 @@ This is the standard DryDock's own research applies to launches. The verifiable-
 2. A scoring protocol, v2, built on three unit-bearing quantities: a simulated structural floor, calibrated channel probabilities and an expected-loss Integrity Score (Section 5).
 3. A manipulation-resistance analysis covering eleven attacks, with five propositions on what an adversary can and cannot move (Section 6).
 4. A pre-registered validation protocol with baselines, metrics, sample sizes, and ship and kill criteria (Section 7).
-5. A verifiability scheme in which forecasts are committed on-chain before outcomes resolve, so the track record cannot be edited after the fact (Section 9).
+5. A verifiability scheme in which forecasts are committed on-chain before outcomes resolve, so the track record cannot be edited after the fact (Section 10).
 
 ### 1.4 Method and scope
 
-The audit covers the methodology, risk and launchpad pages as published on 7 October 2026 \[1, 2, 3\]. They were re-read on 8 October 2026 and had not changed; the methodology page still carried its 1 October date. We had no access to the implementation, to per-token scores or to Arc trade data. Where the published text leaves a rule unspecified, we state the assumption we made and show how the result depends on it.
+The audit covers v1 twice: as published on DryDock's methodology, risk and launchpad pages on 7 October 2026 \[1, 2, 3\], and as implemented in DryDock's code at the commit that last served it (Appendix C). The first version of this paper, written before the code was examined, inferred the scoring rules from the published text; Section 3 states for every finding whether the code confirms it, contradicts it or confirms it in part, and corrects the arithmetic where the code differs from the text.
 
-Every number we computed is reproduced by the script in Appendix B. Parameters of v2 that require outcome data are left as symbols or marked as priors. The paper does not claim that v2 predicts better than v1 on Arc. It specifies the experiment that would show whether it does.
+The design (Sections 4 to 7) is unchanged from that first version except where Section 7.8 records a deviation. The hypotheses, baselines, metrics, sample-size gates and ship and kill criteria were fixed before any Arc outcome was examined. Section 8 then reports what was built and what the data since mainnet opened can and cannot show: every launch on the seven launchpads DryDock lists, from 16 September to 8 October 2026, recomputed by the production code (the backfill, labelled retrospective throughout), and the forecasts DryDock has committed on Arc since 8 October 2026.
+
+Every number in this paper is produced by a kept script: the illustrative arithmetic by the script in Appendix B, the empirical results by the analysis code released with the dataset (Appendix C). Parameters of v2 that require outcome data are left as symbols or marked as priors. The paper does not claim that v2 predicts better than v1 on Arc. It specifies the experiment that would show whether it does, and reports how far that experiment has run.
 
 ## 2. Background and related work
 
@@ -162,6 +164,8 @@ $$
 
 ![Figure 1. Price after an insider sale in a constant-product pool, by the pool's share of supply (Proposition 1). Computed by Appendix B.](figures/figure-1.svg)
 
+*Figure 1. Price after an insider sale in a constant-product pool, by the pool's share of supply (Proposition 1). Computed by Appendix B.*
+
 An 80% price drop needs an insider share of only 12.4% when the pool holds 10% of supply, and 49.4% when it holds 40%. The v1 cap at 30% is too lax for thin pools and arguably too strict for deep ones. The same objection applies to the top-ten-holders factor. Concentrated-liquidity pools need the simulated version of this calculation (Section 5.2), but the direction of the result is the same.
 
 **F7. The caps are cliffs.** *Confirmed.* Caps were applied after normalisation; in the F5 example an insider share of 29.9% scores 79 and 30.1% scores 30.
@@ -175,6 +179,8 @@ An 80% price drop needs an insider share of only 12.4% when the pool holds 10% o
 **F11. The wallet labels reward luck and insiders.** *Partly right.* The window (24 hours, at least five launches) is as stated, but the code required at least 55% of launches won rather than more than half, and counted unsold tokens at the current price. At five and ten launches the two rules coincide, so the false-positive rates quoted for five launches (16.3%, 23.5% and 31.7% at *q* of 0.30, 0.35 and 0.40) stand; at 15, 30 and 40 launches the code's rule is stricter (Appendix B). Marking unsold tokens to the current price makes a "win" depend on the moment the label was computed.
 
 ![Figure 2. Chance that a wallet with no skill earns v1's "profitable trader" label, and the v2 rule's false-positive rate and power, by number of launches. Computed by Appendix B.](figures/figure-2.svg)
+
+*Figure 2. Chance that a wallet with no skill earns v1's "profitable trader" label, and the v2 rule's false-positive rate and power, by number of launches. Computed by Appendix B.*
 
 The label is also confounded with the insider signal. Consistent winners on launchpads are disproportionately creators and snipers \[11\]. A factor that awards points when "wallets with a winning record are holding" may be awarding points for the presence of the wallets the insider factor is meant to penalise. Independent evidence finds the signal weak and non-monotonic \[10\], and following such wallets loses money after price impact \[12\].
 
@@ -230,7 +236,7 @@ Out of scope are compromise of DryDock's infrastructure, validator-level attacks
 
 ### 4.3 The platform as a party
 
-The design does not ask users to trust the platform's reported accuracy. It makes that accuracy independently computable (Section 9).
+The design does not ask users to trust the platform's reported accuracy. It makes that accuracy independently computable (Section 10).
 
 ### 4.4 Properties of Arc that shape the design
 
@@ -245,6 +251,8 @@ The design does not ask users to trust the platform's reported accuracy. It make
 The protocol publishes three layers and never adds them together. Layer 1 is facts computed by simulation. Layer 2 is forecasts of defined events, calibrated against outcomes. Layer 3 is a description of market activity that cannot move the score.
 
 ![Figure 3. The v2 pipeline. One block feeds three layers; only Layers 1 and 2 enter the record, and the market panel has no path into it. The dashed loop is the only route by which outcomes change later forecasts.](figures/figure-3.svg)
+
+*Figure 3. The v2 pipeline. One block feeds three layers; only Layers 1 and 2 enter the record, and the market panel has no path into it. The dashed loop is the only route by which outcomes change later forecasts.*
 
 The market panel receives the same block but has no arrow into the score. The loop at the bottom is the only path by which outcomes change later forecasts.
 
@@ -437,7 +445,7 @@ Classes (a) to (c) reduce what the adversary can extract over the horizon. They 
 
 ## 7. Validation protocol
 
-This section is a pre-registration. It fixes hypotheses, data, baselines, metrics and decision rules before any Arc outcome is examined. Because forecasts are committed on-chain before they resolve (Section 9), the validation is prospective by construction.
+This section is a pre-registration. It fixes hypotheses, data, baselines, metrics and decision rules before any Arc outcome is examined. Because forecasts are committed on-chain before they resolve (Section 10), the validation is prospective by construction.
 
 ### 7.1 Hypotheses
 
@@ -456,7 +464,7 @@ H6 may fail. If it does, the result is reported, and those factors still stay ou
 
 The population is every launch on the six launchpads since mainnet. The unit of analysis is a token at a landmark age: 1 minute, 10 minutes, 1 hour, 6 hours and 24 hours after its first trade \[44\]. Landmarks stop long-lived tokens from dominating and remove the autocorrelation of block-by-block forecasts.
 
-Splits run forward in calendar time. All tokens from one creator cluster fall in one fold, so that a serial launcher cannot leak between training and test. One full horizon is embargoed between folds \[45\]. No feature at block *h* may read state after *h*, a rule the reproducibility check in Section 9 enforces mechanically.
+Splits run forward in calendar time. All tokens from one creator cluster fall in one fold, so that a serial launcher cannot leak between training and test. One full horizon is embargoed between folds \[45\]. No feature at block *h* may read state after *h*, a rule the reproducibility check in Section 10 enforces mechanically.
 
 ### 7.3 Baselines and ablations
 
@@ -508,11 +516,32 @@ All criteria are evaluated on out-of-time data.
 
 Results are re-run with the event thresholds of Section 5.1 moved to (10 points, 30%, 10 USDC) and (30 points, 70%, 30 USDC), with a 1,000 USDC reference position, with funding depth *d* from 1 to 4, with history margins of 7, 30 and 90 days, and with the chain's first week excluded. A conclusion that reverses under any of these is reported as fragile.
 
-## 8. Worked example
+### 7.8 Deviations from the pre-registration
+
+Sections 7.1 to 7.7 are unchanged from the first version of this paper, written before any Arc outcome was examined. What follows lists every way the work reported in Section 8 departs from them, with the reason. None changes a hypothesis, a baseline or a ship or kill criterion.
+
+- **D1. Retrospective data.** Section 7 assumes forecasts committed before their outcomes. DryDock began committing on 8 October 2026, so the records behind H1 and H4 in Section 8 were recomputed after the fact for launches since 16 September 2026 (the backfill). They were produced by the same code and parameters as committed records, but their outcomes were already on chain when they were computed. They are labelled retrospective everywhere and reported separately from committed records; the pre-registered tests on committed data remain pending.
+- **D2. Funding lookback.** Appendix A.1 set 7 days. Public Arc nodes that accept wide log ranges keep about 42 hours of history, and the archive nodes accept 100- to 10,000-block ranges at low rates, so a 7-day, three-hop trace cannot be computed at forecast time and records would not be reproducible from public infrastructure. The lookback is 86,400 blocks (about 12 hours), every edge of a path inside one window ending at the wallet's first purchase.
+- **D3. Minimum age.** Appendix A.1 set 120 blocks, glossed as about a minute. Arc produces about 1.97 blocks a second, so every record at the 1-minute landmark was two or three blocks short and could never be rated. The minimum age is 60 seconds of block time.
+- **D4. Large insider sets.** Appendix A.2 sells every insider address in turn. Beyond 100 addresses the rest of the set is sold as one block, credited to one seller through a storage override, to stay inside the 50 million gas that public nodes allow per call. In a constant-product pool with retained fees this returns slightly more to the reference position than address-by-address sales would (Appendix B); in Uniswap V3 and V4, where fees sit outside active liquidity, the two are equal up to rounding.
+- **D5. "Value the linked wallet acted on."** Section 5.3 states the principle; the implementation needs a rule. A transfer links two wallets only if it carried at least half of what the recipient then spent on its first purchase or forwarded along the path (Appendix A.3).
+- **D6. Address history.** Section 5.3 allows history "on Arc or on another EVM chain". Appendix A.1, which governs, does not; the implementation reads Arc transaction counts only. History on other chains would need archive access to each of them.
+- **D7. Population.** Section 7.2 names six launchpads, including Minara. DryDock lists only launchpads whose tokens its swap router can trade; by 8 October 2026 that was lift.fun, Tolly, ArcPad, Argus, Arcora, o1 Launchpad and Sashimi, while Minara's pools pair with native USDC and are not routable. The population is every launch on those seven since 16 September 2026, identified by the launchpad's own contract logs in the creating transaction.
+- **D8. Committed means committed in time.** Section 10.2 does not say how late a commitment may be. A record counts as committed only if its root was posted within 1,200 blocks of its forecast block (Appendix A.1). The committer account was not funded when the runner started, so the first batches are posted late and fall outside the scoreboard.
+- **D9. v1 baselines without wallet records.** B1 and B2 use v1 as it scored before wallet records loaded, without the smart-money factor: that factor needed 24 hours of every holder's trades across all launches and is not reconstructed for past blocks.
+- **D10. Secondary horizons.** Records and resolutions use the 24-hour horizon only. The 1-hour and 7-day horizons are not yet computed.
+- **D11. A sample, not the population, for the backfill.** Section 7.2 takes every launch. Insider sets and resolutions need each token's transfers until 48 hours after its first trade, and public nodes filter logs only by address, so reconstructing them for all 78,244 traded launches meant downloading every Transfer log on Arc since mainnet opened (estimated at more than eight hours for the transfer scan alone over the bandwidth available). The backfill therefore uses a fixed sample: every traded launch of each launchpad with at most 3,000 of them, and 3,000 drawn uniformly from each larger launchpad (Argus and lift.fun) by a seeded hash of the token address (`backfillSample` in the released code). The sample was fixed before any record was computed. Results are reported per launchpad, where the sample is uniform; pooled figures weight the smaller launchpads more heavily than the population does, and are labelled as sample figures.
+- **D12. Funding stops at contracts.** Section 5.3 ends funding paths at registered hubs only. On Arc, swap routers and pools that are not in the registry (most have no public identification, which the registry requires) receive hundreds of thousands of USDC transfers a day; following their inflows linked a buyer to every other user of the same router and made a single record cost millions of log reads. From method 2.0.2 a path is traced only into accounts without contract code. Wallets funded through one personal contract still share it as an ancestor, and a contract funder fails the history test, so the pessimistic set is unaffected; the lower bound loses the links that ran through contracts.
+
+## 8. Implementation and retrospective results
+
+SECTION8
+
+## 9. Worked example
 
 One hypothetical launch scores 76 to 83 under v1 and has a structural floor of 11 to 30 USDC per 100 under v2. The launch is constructed for illustration; it is not a real token.
 
-### 8.1 The launch
+### 9.1 The launch
 
 - The pool behaves as a constant-product pool with 25,000 USDC and 10% of token supply, at a 1% fee per swap.
 - Liquidity is locked by the launchpad. The token and hook have no privileged roles, and the fee is immutable.
@@ -520,7 +549,7 @@ One hypothetical launch scores 76 to 83 under v1 and has a structural floor of 1
 - A further 12% sits in fresh wallets funded through a bridge. With the 8%, this is the pessimistic set at 20%.
 - The ten largest holders have 30%. More than 30 wallets bought in the last hour, the price is rising, tracked wallets are holding, and the creator has a prior launch that reached 100k USD and is not selling.
 
-### 8.2 Scores
+### 9.2 Scores
 
 | Quantity | v1 | v2 |
 | --- | --- | --- |
@@ -535,7 +564,7 @@ One hypothetical launch scores 76 to 83 under v1 and has a structural floor of 1
 
 The v1 figures assume linear interpolation between the published endpoints. The v2 figures follow from the pool arithmetic alone and are reproduced in Appendix B.
 
-### 8.3 Reading the result
+### 9.3 Reading the result
 
 The two systems are not contradicting each other on a prediction. v1 makes none. What v2 adds at Stage 0 is a fact the v1 number hides: a group that may be one party can remove most of a buyer's money in one block, and the pool's lock does not prevent it.
 
@@ -549,51 +578,53 @@ Whether that group will exit is a separate question, and only outcome data can a
 
 If Arc data show that insiders in this position rarely exit within a day, the calibrated score will be high and v1's optimism about such launches will have been justified. If they usually exit, it will be low. Either way the number will rest on counted outcomes.
 
-### 8.4 What would raise it
+### 9.4 What would raise it
 
 The creator can raise the floor from 11 to 30 by time-locking the 12% beyond the horizon, and higher still by locking part of the 8%. Wash volume, more wallets or a higher price do nothing, and net buying lowers it (Proposition 4). Under v1 as published the reverse holds: no rule credits a lock, and the wash volume earns up to 30 points.
 
-## 9. Verifiability and governance
+## 10. Verifiability and governance
 
 A user should not have to trust the platform's arithmetic or its account of its own accuracy. Both are made checkable.
 
-### 9.1 A deterministic specification
+### 10.1 A deterministic specification
 
 Every output is a pure function of three inputs: Arc state at a finalized block, a versioned specification, and a versioned registry of hubs, lockers and template contracts. The specification, a reference implementation and the hashes of the parameter and registry files are public. Anyone with an archive node can recompute any score ever shown.
 
 Recomputation also enforces time-consistency. A feature that read state after its block would fail to reproduce from state up to that block.
 
-### 9.2 Committed forecasts
+### 10.2 Committed forecasts
 
 At fixed intervals the platform posts one transaction to Arc containing the Merkle root of every forecast record issued in that interval. A record holds the token, the block, the horizon, the version hashes, the three losses, the three probability intervals and the score. The page for any token can supply an inclusion proof for the number it displays.
 
 Resolution at the end of the horizon is a deterministic function of chain state. The scoreboard is therefore a function of two public things: the committed forecasts and the chain. This rules out silent revision, selective reporting and accuracy claims assembled in hindsight. It is pre-registration applied to every forecast, and it parallels the launch certificate of \[4\], which binds a launch's claims before money moves.
 
-A commitment shows that a forecast was made when claimed. It does not show that the forecast was computed correctly. Section 9.1 covers that.
+A commitment shows that a forecast was made when claimed. It does not show that the forecast was computed correctly. Section 10.1 covers that.
 
 In DryDock's implementation the roots go to a ForecastLedger contract on Arc (Appendix A.4), one transaction every 600 blocks. A record counts as committed only if its root landed within 1,200 blocks of its forecast block; a record posted later is published and resolved like any other but is left out of the scoreboard. The records themselves, their leaves and their resolutions are published by batch, so anyone can recompute every leaf, check every root against the contract, and recompute the scoreboard.
 
-### 9.3 Versioning
+### 10.3 Versioning
 
 A new model version runs in shadow first. Its forecasts are committed but not displayed until at least 1,000 have resolved. It is promoted only if it passes the ship criteria of Section 7.6 against the incumbent. Past forecasts keep the label of the version that issued them, and each change is logged with its reason.
 
-### 9.4 No discretion
+### 10.4 No discretion
 
 No score is adjusted by hand. Registry entries are the one place where human judgement enters, for example recognising a locker contract or an exchange wallet. Each entry is public, dated and justified, and can be challenged. Errors are corrected in later versions. The committed record is never rewritten.
 
-### 9.5 Labels on addresses
+### 10.5 Labels on addresses
 
 A public label on a wallet is a statement about a person who cannot reply. The risk page already concedes that attribution errs \[2\]. Labels should therefore carry their evidence, be phrased as likelihoods, and be withheld below the evidence thresholds of Section 5.8. "Losing trader" serves no reader and should be dropped.
 
-## 10. Limitations and non-goals
+## 11. Limitations and non-goals
 
-**No empirical validation.** No Arc outcome data were available. That v2 forecasts better than v1 is a hypothesis. Section 7 is the test, and Section 7.6 says what happens if it fails.
+**Validation is partial and retrospective.** Section 8 tests the two hypotheses that need no fitted model (H1 and H4) on records recomputed after their outcomes (D1). That v2's probabilities forecast better than v1 remains a hypothesis: the sample-size gates are not met, so no channel model is fitted and H2, H3, H5 and H6 are pending. The committed record began on 8 October 2026.
 
-**The audit reads the page, not the code.** The implementation may contain a factor that explains the missing ten points, or special handling for single-sided pools. Findings F2, F3, F4, F6, F7 and F11 hold for any implementation consistent with the page. F1, F5, F8, F9, F10 and F12 are conditional on the page being complete.
+**The audit was checked against the code afterwards.** The first version read only the page. Section 3.3 marks each finding against the v1 source; one conclusion (F1) was wrong and one number (F5) was understated.
 
 **Closed forms are illustrations.** Propositions 1 and 4 and every numerical example assume a constant-product pool. The launchpads use Uniswap V3 and V4 pools \[3, 53, 54\]. The same algebra holds wherever liquidity is constant across the price range traversed, as with a single wide position, but magnitudes on real pools must come from simulation.
 
-**The pessimistic bound is wide on a young chain.** Most honest buyers on Arc cannot yet show address history. The lower end of the floor will be low for many sound launches. The interval is honest about this, and the letter grade may be uninformative until the chain ages (Section 11, objection 2).
+**The pessimistic bound is wide on a young chain.** Most honest buyers on Arc cannot yet show address history. The lower end of the floor will be low for many sound launches. The interval is honest about this, and the letter grade may be uninformative until the chain ages (Section 12, objection 2). Section 8.3 measures how wide it is.
+
+**Public infrastructure bounds the evidence.** The funding lookback is 12 hours, not 7 days (D2), because public Arc nodes keep less history than the design assumed. Funding older than that cannot link wallets, which narrows the lower-bound set; the pessimistic set does not depend on it.
 
 **Structural risk is not all risk.** A launch with an Integrity Score of 95 can still fall to zero because nobody wants the token. The score measures whether the structure can take a buyer's money, not whether the market will.
 
@@ -609,11 +640,11 @@ A public label on a wallet is a statement about a person who cannot reply. The r
 
 **This is not advice, and law is out of scope.** Publishing forecasts about tradable assets may carry obligations in some jurisdictions. As in \[4\], we flag the question and do not resolve it.
 
-## 11. Adversarial self-review
+## 12. Adversarial self-review
 
 We put eight objections to the paper that a hostile referee would raise. Two of them change the design.
 
-**Objection 1. The audit attacks a summary page, not the system.** Partly accepted. Section 10 separates the findings that survive any implementation from those that depend on the page being complete. The page is what users are told, so its gaps are findings in their own right.
+**Objection 1. The audit attacks a summary page, not the system.** Accepted and resolved: Section 3.3 checks every finding against the v1 source code. Ten of twelve hold; F1's conclusion was wrong because the code normalised the score, and F11 used a slightly different rule than the page described. The page is still what users were told, so its inaccuracies are findings in their own right.
 
 **Objection 2. The floor will grade nearly everything E.** Accepted as a real risk, and the design is changed. If more than 80% of launches on a launchpad share one Stage 0 grade, the letter is replaced on that launchpad by the floor interval and its percentile rank among launches of the same age. The grade distribution is reported monthly.
 
@@ -627,9 +658,9 @@ We put eight objections to the paper that a hostile referee would raise. Two of 
 
 **Objection 7. The independence test will exclude honest newcomers and so penalise fair launches.** Accepted, and the design is changed. The pessimistic set is never shown alone. Every display carries both ends of the interval, and the forecasting layer, not a rule, decides how much the pessimistic end matters once outcomes exist.
 
-**Objection 8. The author both proposes and evaluates.** Accepted. The remedy is structural: forecasts are committed before outcomes, baselines include the strongest version of v1, the data and code are to be released, and independent replication is invited. Citations were checked to the differing degrees stated in the verification note.
+**Objection 8. The author both proposes and evaluates.** Accepted. The remedy is structural: forecasts are committed before outcomes, baselines include the strongest version of v1, the data and code are released with this paper (Appendix C), and independent replication is invited. The author also built the implementation, so a defect in it could bias the results in either direction; every record can be recomputed from public chain state with the released code. Citations were checked to the differing degrees stated in the verification note.
 
-## 12. Conclusion and roadmap
+## 13. Conclusion and roadmap
 
 The current score adds things that should not be added, in units that mean nothing, toward a target it does not name. Its most heavily weighted inputs are the ones an insider can buy for a few hundred USDC of fees. None of this is unusual for the category. It is the category's standard, and that is the opportunity.
 
@@ -637,14 +668,14 @@ The replacement rests on one separation. What a launch's structure permits is a 
 
 The design does not solve Sybil identity, and it says so. It bounds what cannot be identified, puts the burden of proof on independence, and enumerates the one remaining route to gaming.
 
-### Implementation order
+### Implementation order and status
 
-1. **Corrections to v1.** Reconcile the weights with the bands (F1). Add a sell simulation and a hook-fee check (F9). Remove the smart-money factor from the sum or relabel it (F11). Add a "too early" state (F12). Publish a changelog.
-2. **Stage 0.** Build the reference-position simulator and the two insider sets with their registry. Show the floor interval, the losses given event and friction beside the v1 score. Start committing forecasts on-chain and resolving events. *Gate: a third party reproduces a sample of published floors from its own archive node.*
-3. **Shadow.** Fit the channel models as outcomes accrue. Commit their forecasts without displaying them. Publish the scoreboard for the base rate, recalibrated v1 and shadow v2. *Gate: the sample-size counts of Section 7.5.*
-4. **Stage 1.** Publish calibrated channel probabilities with intervals. *Gate: H2 and H3.*
-5. **Stage 2.** Make the Integrity Score the headline and retire the v1 verdict words. *Gate: all five ship criteria of Section 7.6.*
-6. **External review.** Release data and code, invite replication and red-teaming, and submit the empirical paper for peer review.
+1. **Corrections to v1.** Superseded: DryDock retired v1 entirely on 8 October 2026 instead of correcting it. v1 survives only as the baselines B1 and B2 (Appendix C).
+2. **Stage 0.** Done on 8 October 2026: the simulator, the two insider sets, the registry and the abstentions are live, and the floor interval with its losses given event is the headline on every token page. Records are issued at the five landmarks, batched for the ForecastLedger and resolved after 24 hours. *Gate: a third party reproduces a sample of published floors from its own archive node. Open.*
+3. **Shadow.** Not started: the sample-size counts of Section 7.5 are not met (Section 8.4), so no channel model is fitted. The scoreboard is live for the committed record.
+4. **Stage 1.** Pending. *Gate: H2 and H3.*
+5. **Stage 2.** Pending. *Gate: all five ship criteria of Section 7.6.*
+6. **External review.** Data and code are released with this version and the paper is posted as a working paper. Replication and red-teaming are invited; peer review is pending.
 
 ## References
 
@@ -785,7 +816,7 @@ Two cautions still apply. \[14\] is an industry report whose method is described
 
 ## Appendix A. Normative specification
 
-This appendix fixes the definitions an implementer needs. Where it conflicts with the body, the appendix governs. Every default is subject to the sensitivity analyses of Section 7.7. This is version 2.0.1, the specification DryDock runs; entries marked † changed from the first version of the paper, for the reasons given in Section 7.8. Its keccak-256 hash enters every record as `spec_hash`.
+This appendix fixes the definitions an implementer needs. Where it conflicts with the body, the appendix governs. Every default is subject to the sensitivity analyses of Section 7.7. This is version 2.0.2, the specification DryDock runs; entries marked † changed from the first version of the paper, for the reasons given in Section 7.8. Its keccak-256 hash enters every record as `spec_hash`.
 
 ### A.1 Constants and defaults
 
@@ -826,7 +857,7 @@ This appendix fixes the definitions an implementer needs. Where it conflicts wit
 
 1. **Activity.** From the token's transfers up to *h*: in a transaction with a transfer out of the market (the V3 pool or the V4 PoolManager), wallets whose balance rose purchased; in one with a transfer into the market, wallets whose balance fell sold; any other rise is an off-market receipt, credited to the transaction's largest sender. Registry hubs, lockers, the hook, the token and burn addresses are infrastructure, not wallets.
 2. **Seeds.** The creator, wallets that purchased in the launch block, and recipients of off-market receipts from the creator or a launchpad contract before their first purchase.
-3. **Links.** Funding: a USDC transfer of at least 1 USDC from a non-hub sender, inside the recipient's lookback window, carrying at least half of what the recipient then spent or forwarded, traced back up to *d* hops; the wallet is linked to every ancestor. Receipts: an off-market receipt before a first purchase links recipient and sender. Proceeds: a USDC transfer of at least 1 USDC to a non-hub address, after a sale, carrying at least half of the sale proceeds so far, links seller and recipient.
+3. **Links.** Funding: a USDC transfer of at least 1 USDC from a non-hub sender, inside the recipient's lookback window, carrying at least half of what the recipient then spent or forwarded, traced back up to *d* hops; the wallet is linked to every ancestor. A path is traced only into accounts without contract code (an EIP-7702 delegation counts as an account): a transfer from a contract links the recipient to the contract, but the contract's own inflows are not followed. Receipts: an off-market receipt before a first purchase links recipient and sender. Proceeds: a USDC transfer of at least 1 USDC to a non-hub address, after a sale, carrying at least half of the sale proceeds so far, links seller and recipient.
 4. **Lower-bound set.** Holders at *h* in a component of the link graph that contains a seed.
 5. **Pessimistic set.** The lower-bound set plus every holder that fails any of: the history margin; a first purchase more than *W* blocks after the launch block; funding that is not only from fresh unlabelled addresses (at least one direct funder is a hub or passes the history margin, or there is no direct funder).
 6. **Entities.** Purchasers outside the lower-bound set, grouped by component of the link graph.
@@ -886,7 +917,7 @@ for label, attainable, activity in (('1 Oct, no wallet records', 80, 30), ('1 Oc
                                     ('7 Oct, no wallet records', 85, 30), ('7 Oct, wallet records', 95, 40)):
     print('F1 %s: attainable %d, top band needs 70%% of it; F3 activity share %.1f%%' % (label, attainable, 100 * activity / attainable))
 
-# --- Section 3, F5 and Section 8: the worked example under v1's real rule
+# --- Section 3, F5 and Section 9: the worked example under v1's real rule
 def scale(v, bad, good):
     return min(1, max(0, (v - bad) / (good - bad)))
 def v1_points(insider, top10, version):
@@ -942,7 +973,7 @@ for n in ns:
     print('S5.8 n=%d: needs %d wins; false positive %.4f; power at q=.60 %.3f'
           % (n, kmin, stats.binom.sf(kmin - 1, n, q0), stats.binom.sf(kmin - 1, n, .6)))
 
-# --- Section 8.1: v2 facts for the stylised example (constant product, fee retained in the pool)
+# --- Section 9.1: v2 facts for the stylised example (constant product, fee retained in the pool)
 x0, g, phi, B, S = 25000.0, 0.10, 0.01, 100.0, 1e9
 def buy(x, y, usd):
     a = usd * (1 - phi); out = y * a / (x + a); return out, x + usd, y - out
@@ -957,7 +988,7 @@ for name, f in (('lower-bound set, 8%', .08), ('pessimistic set, 20%', .20)):
           % (name, got, 100 * got / x1, r, 100 - r))
     for pi in (.10, .30, .60):
         print('   assumed pi=%.2f -> Integrity Score %.0f' % (pi, 100 * (1 - pi * (1 - r / 100))))
-# Appendix A.2 sells address by address, largest first. With the split of Section 8.1 (creator 4%, two
+# Appendix A.2 sells address by address, largest first. With the split of Section 9.1 (creator 4%, two
 # launch-block buyers 2% each; six fresh wallets 2% each) and fees retained in the pool:
 for name, parts in (('lower-bound set', [.04, .02, .02]), ('pessimistic set', [.04, .02, .02] + [.02] * 6)):
     x, y = x1, y1

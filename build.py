@@ -30,7 +30,7 @@ abstract = source.split("## Abstract", 1)[1].split("**Keywords:**", 1)[0].strip(
 body = source.split("**Keywords:**", 1)[1].split("\n", 1)[1]
 body = body[body.index("## 1. Introduction"):]
 # Figures: an image paragraph becomes the figure drawn from data.
-body = re.sub(r"!\[[^\]]*\]\(figures/(figure-\d+)\.svg\)", lambda m: "```{=latex}\n\\input{../figures/%s}\n```" % m.group(1), body)
+body = re.sub(r"!\[[^\]]*\]\(figures/(figure-\d+)\.svg\)\n\n\*Figure [^\n]*\*", lambda m: "```{=latex}\n\\input{../figures/%s}\n```" % m.group(1), body)
 
 
 def tex(markdown):

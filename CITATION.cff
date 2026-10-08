@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this method, the dataset or the analysis code, please cite the paper as below."
+title: "Calibrated Launch Integrity: A Verifiable, Manipulation-Aware Scoring Protocol for Newly Launched Tokens"
+type: article
+authors:
+  - family-names: Ghasemlu
+    given-names: Farbod
+    orcid: "https://orcid.org/0009-0009-2303-5672"
+    affiliation: "Drydock Org"
+    email: farbodghasemlu@outlook.com
+date-released: 2026-10-08
+version: "working-paper-2026-10-08"
+license: CC-BY-4.0
+url: "https://drydockprotocol.org/research/launch-integrity"
+repository-code: "https://github.com/DryDockOrg/launch-integrity-paper"
+keywords:
+  - token launches
+  - rug pulls
+  - probabilistic forecasting
+  - calibration
+  - proper scoring rules
+  - Sybil resistance
+  - entity resolution
+  - automated market makers
+  - verifiable computation

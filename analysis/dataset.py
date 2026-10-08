@@ -18,8 +18,12 @@ launches_json = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirna
 con = sqlite3.connect(store)
 
 launches = pd.DataFrame(json.load(open(launches_json)))
-first = pd.read_sql_query("SELECT key AS pool, MIN(block) AS first_trade FROM logs WHERE kind = 'pool' AND json_extract(topics, '$[0]') IN "
-                          "('0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67', '0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f') GROUP BY key", con)
+cached = con.execute("SELECT v FROM kv WHERE k = 'first_trades'").fetchone()
+if cached:
+    first = pd.DataFrame(json.loads(cached[0]), columns=["pool", "first_trade"])
+else:
+    first = pd.read_sql_query("SELECT key AS pool, MIN(block) AS first_trade FROM logs WHERE kind = 'pool' AND substr(topics, 3, 66) IN "
+                              "('0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67', '0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f') GROUP BY key", con)
 launches["pool"] = launches.pool.str.lower()
 launches = launches.merge(first, on="pool", how="left")
 launches["traded"] = launches.first_trade.notna()

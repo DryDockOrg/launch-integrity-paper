@@ -15,7 +15,7 @@ for label, attainable, activity in (('1 Oct, no wallet records', 80, 30), ('1 Oc
                                     ('7 Oct, no wallet records', 85, 30), ('7 Oct, wallet records', 95, 40)):
     print('F1 %s: attainable %d, top band needs 70%% of it; F3 activity share %.1f%%' % (label, attainable, 100 * activity / attainable))
 
-# --- Section 3, F5 and Section 8: the worked example under v1's real rule
+# --- Section 3, F5 and Section 9: the worked example under v1's real rule
 def scale(v, bad, good):
     return min(1, max(0, (v - bad) / (good - bad)))
 def v1_points(insider, top10, version):
@@ -71,7 +71,7 @@ for n in ns:
     print('S5.8 n=%d: needs %d wins; false positive %.4f; power at q=.60 %.3f'
           % (n, kmin, stats.binom.sf(kmin - 1, n, q0), stats.binom.sf(kmin - 1, n, .6)))
 
-# --- Section 8.1: v2 facts for the stylised example (constant product, fee retained in the pool)
+# --- Section 9.1: v2 facts for the stylised example (constant product, fee retained in the pool)
 x0, g, phi, B, S = 25000.0, 0.10, 0.01, 100.0, 1e9
 def buy(x, y, usd):
     a = usd * (1 - phi); out = y * a / (x + a); return out, x + usd, y - out
@@ -86,7 +86,7 @@ for name, f in (('lower-bound set, 8%', .08), ('pessimistic set, 20%', .20)):
           % (name, got, 100 * got / x1, r, 100 - r))
     for pi in (.10, .30, .60):
         print('   assumed pi=%.2f -> Integrity Score %.0f' % (pi, 100 * (1 - pi * (1 - r / 100))))
-# Appendix A.2 sells address by address, largest first. With the split of Section 8.1 (creator 4%, two
+# Appendix A.2 sells address by address, largest first. With the split of Section 9.1 (creator 4%, two
 # launch-block buyers 2% each; six fresh wallets 2% each) and fees retained in the pool:
 for name, parts in (('lower-bound set', [.04, .02, .02]), ('pessimistic set', [.04, .02, .02] + [.02] * 6)):
     x, y = x1, y1
