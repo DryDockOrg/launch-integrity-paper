@@ -101,8 +101,8 @@ gates["met"] = bool(gates["resolved"] >= GATES["resolved"] and gates["creators"]
 results["gates"] = gates
 say("Gates: resolved %d (rated %d), creators %d, events %s, met %s" % (gates["resolved"], gates["resolved_rated"], gates["creators"], events, gates["met"]))
 
-# --- Baseline B0 and v1 (B1) for the insider channel, as descriptive comparisons only: the gates of Section 7.5
-# are not met, so no channel model is fitted and H2, H3 and H6 are not tested (Section 8.4).
+# --- Baseline B0 and v1 (B1) for the insider channel, as descriptive comparisons only. Whether a channel model may
+# be fitted (and H2, H3 and H6 tested) depends on the gates of Section 7.5, computed above as `gates["met"]`.
 b0 = {}
 y = res["fired_I"].fillna(False).astype(int).values
 if len(res) >= 50 and y.sum() and (1 - y).sum():

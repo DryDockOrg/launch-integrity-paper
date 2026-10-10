@@ -616,13 +616,13 @@ A public label on a wallet is a statement about a person who cannot reply. The r
 
 ## 11. Limitations and non-goals
 
-**Validation is partial and retrospective.** Section 8 tests the two hypotheses that need no fitted model (H1 and H4) on records recomputed after their outcomes (D1). That v2's probabilities forecast better than v1 remains a hypothesis: the sample-size gates are not met, so no channel model is fitted and H2, H3, H5 and H6 are pending. The committed record began on 8 October 2026.
+**Validation is partial and retrospective.** Section 8 tests the two hypotheses that need no fitted model (H1 and H4) on records recomputed after their outcomes (D1). That v2's probabilities forecast better than v1 remains a hypothesis until a channel model is fitted, which the sample-size gates of Section 7.5 govern; Section 8.4 reports the counts. The committed record began on 8 October 2026.
 
 **The audit was checked against the code afterwards.** The first version read only the page. Section 3.3 marks each finding against the v1 source; one conclusion (F1) was wrong and one number (F5) was understated.
 
 **Closed forms are illustrations.** Propositions 1 and 4 and every numerical example assume a constant-product pool. The launchpads use Uniswap V3 and V4 pools \[3, 53, 54\]. The same algebra holds wherever liquidity is constant across the price range traversed, as with a single wide position, but magnitudes on real pools must come from simulation.
 
-**The pessimistic bound is wide on a young chain.** Most honest buyers on Arc cannot yet show address history. The lower end of the floor will be low for many sound launches. The interval is honest about this, and the letter grade may be uninformative until the chain ages (Section 12, objection 2). Section 8.3 measures how wide it is.
+**The pessimistic bound is wide on a young chain.** The history margin asks for activity 30 days before a token's creation, and public mainnet opened on 16 September 2026, so for launches before mid-October only addresses active before mainnet opened can pass it. The lower end of the floor can therefore be low for sound launches. The interval is honest about this, and the letter grade may be uninformative until the chain ages (Section 12, objection 2). Section 8.3 measures how wide it is.
 
 **Public infrastructure bounds the evidence.** The funding lookback is 12 hours, not 7 days (D2), because public Arc nodes keep less history than the design assumed. Funding older than that cannot link wallets, which narrows the lower-bound set; the pessimistic set does not depend on it.
 
@@ -672,7 +672,7 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 
 1. **Corrections to v1.** Superseded: DryDock retired v1 entirely on 8 October 2026 instead of correcting it. v1 survives only as the baselines B1 and B2 (Appendix C).
 2. **Stage 0.** Done on 8 October 2026: the simulator, the two insider sets, the registry and the abstentions are live, and the floor interval with its losses given event is the headline on every token page. Records are issued at the five landmarks, batched for the ForecastLedger and resolved after 24 hours. *Gate: a third party reproduces a sample of published floors from its own archive node. Open.*
-3. **Shadow.** Not started: the sample-size counts of Section 7.5 are not met (Section 8.4), so no channel model is fitted. The scoreboard is live for the committed record.
+3. **Shadow.** Governed by the sample-size counts of Section 7.5, reported in Section 8.4; a channel model is fitted only once they are met. The scoreboard is live for the committed record.
 4. **Stage 1.** Pending. *Gate: H2 and H3.*
 5. **Stage 2.** Pending. *Gate: all five ship criteria of Section 7.6.*
 6. **External review.** Data and code are released with this version and the paper is posted as a working paper. Replication and red-teaming are invited; peer review is pending.
