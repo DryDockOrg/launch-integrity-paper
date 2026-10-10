@@ -12,6 +12,10 @@ date-released: 2026-10-08
 version: "working-paper-2026-10-08"
 license: CC-BY-4.0
 url: "https://drydockprotocol.org/research/launch-integrity"
+identifiers:
+  - type: doi
+    value: "10.7910/DVN/ROY5A4"
+    description: "Dataset (Harvard Dataverse)"
 repository-code: "https://github.com/DryDockOrg/launch-integrity-paper"
 keywords:
   - token launches
