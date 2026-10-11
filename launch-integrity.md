@@ -614,11 +614,35 @@ These were not pre-registered and are reported as exploratory.
 
 SECTION86
 
-## 9. Worked example
+## 9. Worked examples
+
+The first example is a real launch from the backfill, chosen by a fixed rule before its numbers were read: the first rated 1-hour record, by block, whose insider-exit event fired before its horizon and whose floor is an interval. The second is a hypothetical launch that isolates the arithmetic.
+
+### 9.1 A real launch
+
+TOLLYTOAD (`0x517b95ae1f8ccafaba3d84eb66e9df007b2ca88a`) was created on Tolly at block 21,087,614, under three hours after mainnet opened, in a Uniswap V3 pool with a 1% fee and no hook. Its first swap came 69 blocks later. The record at the 1-hour landmark (block 21,094,790) reads:
+
+| Quantity | Value |
+| --- | --- |
+| Holders | 75 |
+| Lower-bound insider set | 0 holders |
+| Pessimistic insider set | 65 holders, whose exit would take 3,294 USDC from the pool |
+| Independent entities outside the lower bound | 19 |
+| Friction (100 USDC in and out, no event) | 98.0 |
+| Recovery after tradability or liquidity event | 98.0 (no privileged role; liquidity locked) |
+| Recovery after insider exit, lower bound / pessimistic | 98.0 / 38.8 |
+| Structural floor | 38.8 to 98.0 USDC per 100; grade D |
+| v1 score (1 October / 7 October rule) | 79 / 80, "Strong setup" |
+
+No holder showed evidence of acting with the creator, so the lower bound is empty and its exit costs nothing. 65 of the 75 holders could not show independence (Section 8.3), and if they all sold the position would keep 38.8 of its 100 USDC. v1 called the launch a strong setup.
+
+Over the next 24 hours the pessimistic set sold 96% of its tokens; the insider-exit event fired 111,660 blocks (about 16 hours) after the record. At the horizon the position was worth 39.1 USDC. The floor's lower end had said 38.8.
+
+The example also shows the weakness of the pre-registered event measure (Section 8.5): in the single block where the outflow crossed half of the set's balance, the position lost only 3.3%, because most of the exit had already happened in smaller sales.
+
+### 9.2 An illustrative launch
 
 One hypothetical launch scores 76 to 83 under v1 and has a structural floor of 11 to 30 USDC per 100 under v2. The launch is constructed for illustration; it is not a real token.
-
-### 9.1 The launch
 
 - The pool behaves as a constant-product pool with 25,000 USDC and 10% of token supply, at a 1% fee per swap.
 - Liquidity is locked by the launchpad. The token and hook have no privileged roles, and the fee is immutable.
@@ -626,7 +650,7 @@ One hypothetical launch scores 76 to 83 under v1 and has a structural floor of 1
 - A further 12% sits in fresh wallets funded through a bridge. With the 8%, this is the pessimistic set at 20%.
 - The ten largest holders have 30%. More than 30 wallets bought in the last hour, the price is rising, tracked wallets are holding, and the creator has a prior launch that reached 100k USD and is not selling.
 
-### 9.2 Scores
+**Scores.**
 
 | Quantity | v1 | v2 |
 | --- | --- | --- |
@@ -641,7 +665,7 @@ One hypothetical launch scores 76 to 83 under v1 and has a structural floor of 1
 
 The v1 figures assume linear interpolation between the published endpoints. The v2 figures follow from the pool arithmetic alone and are reproduced in Appendix B.
 
-### 9.3 Reading the result
+**Reading the result.**
 
 The two systems are not contradicting each other on a prediction. v1 makes none. What v2 adds at Stage 0 is a fact the v1 number hides: a group that may be one party can remove most of a buyer's money in one block, and the pool's lock does not prevent it.
 
@@ -655,7 +679,7 @@ Whether that group will exit is a separate question, and only outcome data can a
 
 If Arc data show that insiders in this position rarely exit within a day, the calibrated score will be high and v1's optimism about such launches will have been justified. If they usually exit, it will be low. Either way the number will rest on counted outcomes.
 
-### 9.4 What would raise it
+**What would raise it.**
 
 The creator can raise the floor from 11 to 30 by time-locking the 12% beyond the horizon, and higher still by locking part of the 8%. Wash volume, more wallets or a higher price do nothing, and net buying lowers it (Proposition 4). Under v1 as published the reverse holds: no rule credits a lock, and the wash volume earns up to 30 points.
 
@@ -1050,7 +1074,7 @@ for n in ns:
     print('S5.8 n=%d: needs %d wins; false positive %.4f; power at q=.60 %.3f'
           % (n, kmin, stats.binom.sf(kmin - 1, n, q0), stats.binom.sf(kmin - 1, n, .6)))
 
-# --- Section 9.1: v2 facts for the stylised example (constant product, fee retained in the pool)
+# --- Section 9.2: v2 facts for the stylised example (constant product, fee retained in the pool)
 x0, g, phi, B, S = 25000.0, 0.10, 0.01, 100.0, 1e9
 def buy(x, y, usd):
     a = usd * (1 - phi); out = y * a / (x + a); return out, x + usd, y - out
@@ -1065,7 +1089,7 @@ for name, f in (('lower-bound set, 8%', .08), ('pessimistic set, 20%', .20)):
           % (name, got, 100 * got / x1, r, 100 - r))
     for pi in (.10, .30, .60):
         print('   assumed pi=%.2f -> Integrity Score %.0f' % (pi, 100 * (1 - pi * (1 - r / 100))))
-# Appendix A.2 sells address by address, largest first. With the split of Section 9.1 (creator 4%, two
+# Appendix A.2 sells address by address, largest first. With the split of Section 9.2 (creator 4%, two
 # launch-block buyers 2% each; six fresh wallets 2% each) and fees retained in the pool:
 for name, parts in (('lower-bound set', [.04, .02, .02]), ('pessimistic set', [.04, .02, .02] + [.02] * 6)):
     x, y = x1, y1
