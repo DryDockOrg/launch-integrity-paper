@@ -17,11 +17,15 @@ Pessimistic set as share of holders: median 1.000, mean 0.647; records where it 
   grades argus    A 438 (57%) B 102 (13%) C 54 (7%) D 68 (9%) E 105 (14%)
   grades lift     A 2 (40%) B 2 (40%) C 1 (20%) D 0 (0%) E 0 (0%)
   grades tolly    A 33 (34%) B 22 (23%) C 24 (25%) D 16 (17%) E 1 (1%)
-H1 I: events 70, mean |realised - predicted| 43.38, passes False
+H1 I: events 70, mean |realised - predicted| 12.68, passes False
 H1 L: events 0, mean |realised - predicted| None, passes False
 H1 T: events 0, mean |realised - predicted| None, passes False
-H4: A n=474 loss=0.912, B n=127 loss=0.500, C n=80 loss=0.413, D n=84 loss=0.594, E n=111 loss=0.717; monotone False
-    Jonckheere-Terpstra z=-11.92 p=1
-Gates: resolved 876 (rated 876), creators 4066, events {'T': 0, 'L': 0, 'I': 127}, met False
+H4: A n=474 loss=0.035, B n=127 loss=0.111, C n=80 loss=0.245, D n=84 loss=0.513, E n=111 loss=0.685; monotone True
+    Jonckheere-Terpstra z=23.76 p=0
+H4 net of friction (exploratory): A 0.005 (friction 97.0), B 0.060 (friction 94.4), C 0.207 (friction 94.5), D 0.492 (friction 95.3), E 0.675 (friction 96.2)
+H1 at the horizon (exploratory): events 70, mean |horizon - pessimistic| 2.81, mean signed 2.76, median |.| 0.25
+Too early at 24 h: 7526 records, 7455 with under 10 holders, 3764 with none
+Example: 0x517b95ae1f8ccafaba3d84eb66e9df007b2ca88a (tolly) at block 21094790, grade D, floor 38.83 to 98.02, realised at horizon 39.13
+Gates: resolved 876 (rated 876), creators 214, events {'T': 0, 'L': 0, 'I': 127}, met False
 B0 (insider exit, out of time, 286 test records, 17 events): Brier 0.0591
 B1 v1 isotonic: Brier 0.0748, AUC 0.580; floor lower end AUC 0.461

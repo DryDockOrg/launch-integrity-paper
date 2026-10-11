@@ -536,7 +536,83 @@ Sections 7.1 to 7.7 are unchanged from the first version of this paper, written 
 
 ## 8. Implementation and retrospective results
 
-SECTION8
+This section reports what was built and what the data since mainnet opened show. Every number in it is produced by `analysis/results.py` from the released dataset (Appendix C); the records were computed by the same code that issues live records, under method 2.0.3. The records behind Sections 8.2 to 8.5 are retrospective (D1): their outcomes were on chain when they were computed.
+
+### 8.1 What was built
+
+DryDock runs Stage 0 (Section 5.6). For each launch it issues a record 1 minute, 10 minutes, 1 hour, 6 hours and 24 hours after the first swap, computing the facts layer by `eth_call` simulation at the forecast block with the pool, hook, position managers and token enforcing their own code (Appendix A.2), the two insider sets (Appendix A.3), and the abstentions. Records are batched every 600 blocks under a Merkle root for the ForecastLedger contract (Section 10.2) and resolved after 24 hours (Appendix A.5). The token page shows the floor interval, its grade, friction and the three losses, with later stages shown as gated; v1's number, factors, caps and verdict words are retired, and v1 survives only as the baselines B1 and B2.
+
+The backfill recomputes the same records for past launches. It reads pool events, token transfers and USDC moves from a local store built by scanning public Arc nodes, and everything else (simulation, code, timestamps, transaction counts) from archive nodes at the historical block.
+
+### 8.2 Population, sample and records
+
+Between 16 September and 7 October 2026 the seven launchpads DryDock lists created 202,944 launches, of which 78,223 traded at least once (Table 8). Argus accounts for 89% of launches. The backfill covers a fixed sample of 9,475 traded launches (D11): every traded launch of Tolly, o1 Launchpad, ArcPad, Arcora and Sashimi, and 3,000 each from Argus and lift.fun. Each received five records, 47,375 in all; none failed to compute and no resolution failed.
+
+| Launchpad | Launches | Traded | In the sample | Rated at 24 h |
+| --- | --- | --- | --- | --- |
+| Argus | 180,434 | 56,534 | 3,000 | 176 |
+| lift.fun | 18,285 | 18,214 | 3,000 | 1 |
+| Tolly | 2,177 | 1,721 | 1,721 | 25 |
+| o1 Launchpad | 1,872 | 1,612 | 1,612 | 0 |
+| ArcPad | 164 | 130 | 130 | 0 |
+| Arcora | 11 | 11 | 11 | 2 |
+| Sashimi | 1 | 1 | 1 | 0 |
+
+*Table 8. Launches by launchpad, 16 September to 7 October 2026.*
+
+Most records abstain. At each landmark 1,745 are unobservable: the o1 Launchpad, ArcPad and Sashimi token contracts have no verified source, so the registry cannot bound them (Section 5.2), and two lift.fun launches used unregistered code. Of the rest, between 58 (1 minute) and 215 (1 hour) are rated and the others are too early. Too early here almost never means too young: at the 24-hour landmark, 7,455 of the 7,526 too-early records have fewer than 10 holders in total and 3,764 have none. Most launches on Arc are bought by a handful of wallets or by nobody, and the method declines to rate them.
+
+| Landmark | Rated | Too early | Unobservable |
+| --- | --- | --- | --- |
+| 1 minute | 58 | 7,672 | 1,745 |
+| 10 minutes | 185 | 7,545 | 1,745 |
+| 1 hour | 215 | 7,515 | 1,745 |
+| 6 hours | 214 | 7,516 | 1,745 |
+| 24 hours | 204 | 7,526 | 1,745 |
+
+*Table 9. Record states by landmark, sample of 9,475 launches.*
+
+### 8.3 Insider sets on a three-week-old chain
+
+Section 5.3 warned that the pessimistic set would be wide on a young chain. It is wider than wide. The history margin asks for activity 30 days before the token's creation, and every launch in the population was created within 22 days of mainnet opening. Across records, the share of holders that pass the history margin has a median of 0% and a mean of 0.9%. In 63.2% of records the pessimistic set holds every holder, and the median share of holders in it is 100%. The lower-bound set, which needs positive evidence, is much smaller: in the worked example of Section 9.1 it is empty while the pessimistic set holds 65 of 75 holders.
+
+The consequence is that, for now, the lower end of the floor mostly answers the question "what if everyone who holds sold?" That question is the right worst case when no holder can show independence, and the data below show it predicts outcomes well, but the interval will narrow only as the chain ages and holders accumulate history.
+
+### 8.4 Pre-registered tests
+
+**H1 (the facts layer measures severity): fails for insider exit; untestable for the other channels.** Among rated records, 70 launches saw an insider exit after a forecast. At their last prior forecast, the mean absolute difference between the realised recovery at the event and the recovery the pessimistic insider exit predicted is 12.7 points, above the 10-point criterion; the median is 4.4. Every error has the same sign: realised recovery was higher than predicted, so the floor erred on the safe side. No tradability or liquidity event occurred in the sample, so H1 cannot be tested for those channels.
+
+**H4 (grades order realised loss): passes.** Over 876 resolved rated records, the mean loss of the reference position after 24 hours rises from 3.5% at grade A to 68.5% at grade E, monotonically (Table 10, Figure 4); a Jonckheere–Terpstra test for an ordered trend gives z = 23.8. The ordering holds at the 10-minute, 1-hour, 6-hour and 24-hour landmarks taken separately; at 1 minute (58 records) grades D and E swap.
+
+| Grade | Records | Mean loss after 24 h | Severe loss (≤ 20 USDC) |
+| --- | --- | --- | --- |
+| A | 474 | 3.5% | 0.0% |
+| B | 127 | 11.1% | 0.0% |
+| C | 80 | 24.5% | 0.0% |
+| D | 84 | 51.3% | 0.0% |
+| E | 111 | 68.5% | 63.1% |
+
+*Table 10. Realised loss by grade, rated retrospective records, all landmarks.*
+
+![Figure 4](figures/figure-4.svg)
+
+*Figure 4: Mean realised loss after 24 hours by grade (H4).*
+
+**Sample-size gates (Section 7.5): not met.** The backfill holds 876 resolved records (the gate is 2,000), launched by 214 distinct creators (an upper bound on creator clusters; the gate is 500), with 127 insider-exit events and no tradability or liquidity events (the gate is 100 per channel). No channel model was fitted. H2, H3 and H6 need one and are not tested; H5 also needs 30 days of wallet history, which no wallet can have before 15 November 2026.
+
+**Baselines, descriptive only.** Fitting nothing, the comparisons of Section 7.3 can still be run on the insider channel to show the data's shape, but they support no claim. On an out-of-time split with a one-horizon embargo and unseen creators (286 test records, 17 insider exits), B0's Brier score is 0.059 and v1 recalibrated by isotonic regression (B1) scores 0.075, with an AUC of 0.58. The floor's lower end, which is a severity, not a probability, has an AUC of 0.46 for whether an exit occurs. Severity and likelihood are different things, which is the separation Section 5 rests on.
+
+### 8.5 Exploratory analyses
+
+These were not pre-registered and are reported as exploratory.
+
+*H1 measured at the horizon.* The pre-registered event measure compares the position's value just before and at the block in which the event crosses its threshold. When insiders sell gradually, that block carries only the last part of the exit: in the worked example the firing block costs the position 3% while the whole exit costs it 61%. Comparing instead the pessimistic insider-exit recovery at the last prior forecast with the recovery at the horizon, for the same 70 launches, the mean absolute difference is 2.8 points (median 0.25); in 16% of them the horizon value is below the pessimistic floor. The simulated floor predicted where the position ended. The pre-registered criterion is not replaced by this result; it is the evidence that the event measure of Appendix A.5, step 5, should be revised in a later version, with the revision registered before it is tested.
+
+*H4 net of trading costs.* The floor and the realised loss both include the round-trip cost of the reference position, so part of the ordering could be mechanical. Measuring the horizon recovery against each record's own friction removes it. The ordering survives: 0.5%, 6.0%, 20.7%, 49.2% and 67.5% from A to E, while mean friction is between 94 and 97 per 100 in every grade.
+
+### 8.6 The committed record
+
+SECTION86
 
 ## 9. Worked example
 

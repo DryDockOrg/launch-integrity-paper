@@ -94,9 +94,52 @@ say("H4: " + ", ".join("%s n=%d loss=%.3f" % (g, by_grade[g]["n"], by_grade[g]["
 if jt:
     say("    Jonckheere-Terpstra z=%.2f p=%.4g" % (jt["z"], jt["p"]))
 
+# --- Exploratory (not pre-registered): H4 net of trading costs. The floor and the realised loss both include the
+# round-trip cost of the reference position, so part of the ordering is mechanical; this removes it by measuring
+# the horizon recovery against the friction recovery of the same record.
+net = res.dropna(subset=["friction"]).copy()
+net = net[net.friction > 0]
+net["loss_net"] = 1 - (net.recovery_at_horizon / net.friction).clip(upper=1)
+by_grade_net = {g: {"n": int((net.grade == g).sum()), "mean_loss_net": float(net.loss_net[net.grade == g].mean()) if (net.grade == g).any() else None,
+                    "mean_friction": float(net.friction[net.grade == g].mean()) if (net.grade == g).any() else None} for g in GRADES}
+m_net = [by_grade_net[g]["mean_loss_net"] for g in GRADES if by_grade_net[g]["n"]]
+results["h4_net_of_friction_exploratory"] = {"by_grade": by_grade_net, "monotone": all(a <= b for a, b in zip(m_net, m_net[1:]))}
+say("H4 net of friction (exploratory): " + ", ".join("%s %.3f (friction %.1f)" % (g, by_grade_net[g]["mean_loss_net"], by_grade_net[g]["mean_friction"]) for g in GRADES if by_grade_net[g]["n"]))
+
+# --- Exploratory (not pre-registered): H1's event measure compares value just before and at the block in which
+# the event crosses its threshold, which captures only the last part of a gradual exit. For the same records,
+# the insider-exit recovery at the last prior forecast against the recovery at the horizon.
+fired_i = rated[(rated.fired_I == True) & (rated.block < rated.event_block_I)].sort_values("block").groupby("token").tail(1)  # noqa: E712
+alt = (fired_i.recovery_at_horizon - fired_i.recovery_IPessimistic).dropna()
+alt_low = (fired_i.recovery_at_horizon - fired_i.recovery_ILower).dropna()
+results["h1_horizon_exploratory"] = {"events": int(len(alt)), "mean_abs_error": float(alt.abs().mean()) if len(alt) else None, "mean_error": float(alt.mean()) if len(alt) else None,
+                                     "median_abs_error": float(alt.abs().median()) if len(alt) else None, "mean_abs_error_vs_lower_bound": float(alt_low.abs().mean()) if len(alt_low) else None,
+                                     "share_horizon_below_pessimistic": float((alt < 0).mean()) if len(alt) else None}
+say("H1 at the horizon (exploratory): events %d, mean |horizon - pessimistic| %.2f, mean signed %.2f, median |.| %.2f" % (len(alt), alt.abs().mean(), alt.mean(), alt.abs().median()))
+
+# --- Why records abstain: holders at h of too-early records, and unobservable records by launchpad (24 h landmark)
+day = valid[valid.landmark == 86400]
+early = day[day.state == "too_early"]
+results["too_early_24h"] = {"records": int(len(early)), "holders_under_10": int((early.holders < 10).sum()), "holders_zero": int((early.holders == 0).sum()),
+                            "by_launchpad": {pad: {"records": int(len(g)), "holders_under_10": int((g.holders < 10).sum()), "holders_zero": int((g.holders == 0).sum())} for pad, g in early.groupby("launchpad")}}
+results["unobservable_24h"] = {pad: int(n) for pad, n in day[day.state == "unobservable"].groupby("launchpad").size().items()}
+results["rated_24h"] = {pad: int(n) for pad, n in day[day.state == "rated"].groupby("launchpad").size().items()}
+say("Too early at 24 h: %d records, %d with under 10 holders, %d with none" % (len(early), (early.holders < 10).sum(), (early.holders == 0).sum()))
+
+# --- Worked example (Section 9): the first rated 1-hour record, by forecast block, of a launch whose insider-exit
+# event fired before its horizon and whose floor is an interval (lower and upper bounds differ).
+pick = res[(res.landmark == 3600) & (res.fired_I == True) & (res.floor_high - res.floor_low > 1)].sort_values("block")  # noqa: E712
+if len(pick):
+    row = pick.iloc[0]
+    keys = ["token", "launchpad", "landmark", "block", "ts", "grade", "friction", "depth", "recovery_T", "recovery_L", "recovery_ILower", "recovery_IPessimistic",
+            "floor_low", "floor_high", "holders", "lower_count", "pessimistic_count", "entities_outside_lower", "lower_take_usdc", "pessimistic_take_usdc",
+            "recovery_at_horizon", "severe_loss", "insider_outflow", "liquidity_withdrawn", "event_block_I", "realised_I", "v1_score_1001", "v1_score_1007", "flags", "token_template", "hook_template"]
+    results["example"] = {k: (row[k].item() if hasattr(row[k], "item") else row[k]) for k in keys if k in row and not (isinstance(row[k], float) and np.isnan(row[k]))}
+    say("Example: %s (%s) at block %d, grade %s, floor %.2f to %.2f, realised at horizon %.2f" % (row.token, row.launchpad, row.block, row.grade, row.floor_low, row.floor_high, row.recovery_at_horizon))
+
 # --- Gate counts (Section 7.5), retrospective
 events = {c: int(rated["fired_" + c].fillna(False).astype(bool).sum()) for c in "TLI"}
-gates = {"resolved": int(valid.resolved.sum()), "resolved_rated": int(res.shape[0]), "creators": int(valid.creator.nunique()), "events": events}
+gates = {"resolved": int(valid.resolved.sum()), "resolved_rated": int(res.shape[0]), "creators": int(valid[valid.resolved].creator.nunique()), "creators_all_records": int(valid.creator.nunique()), "events": events}
 gates["met"] = bool(gates["resolved"] >= GATES["resolved"] and gates["creators"] >= GATES["clusters"] and min(events.values()) >= GATES["events"])
 results["gates"] = gates
 say("Gates: resolved %d (rated %d), creators %d, events %s, met %s" % (gates["resolved"], gates["resolved_rated"], gates["creators"], events, gates["met"]))
