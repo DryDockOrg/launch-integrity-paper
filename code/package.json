@@ -1,0 +1,22 @@
+{
+  "name": "launch-integrity-code",
+  "private": true,
+  "type": "module",
+  "description": "Code that produced the Calibrated Launch Integrity records: facts layer, records, resolver, backfill and v1 baselines.",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest run",
+    "compile": "tsx scripts/compile-simulator.ts",
+    "backfill": "sh scripts/integrity/backfill/all.sh"
+  },
+  "dependencies": {
+    "viem": "2.56.5"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "solc": "0.8.30",
+    "tsx": "4.23.13",
+    "typescript": "5.9.3",
+    "vitest": "5.0.1"
+  }
+}
