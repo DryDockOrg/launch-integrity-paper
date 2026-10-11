@@ -1,14 +1,18 @@
 # Calibrated Launch Integrity: A Verifiable, Manipulation-Aware Scoring Protocol for Newly Launched Tokens
 
-Oct 7, 2026 · @7
+Farbod Ghasemlu · Drydock Org · ORCID [0009-0009-2303-5672](https://orcid.org/0009-0009-2303-5672) · farbodghasemlu@outlook.com
 
-*Working paper prepared for Drydock Org. It has not been through external peer review. No Arc outcome data were available to the author, so every empirical claim about the proposed design is stated as a hypothesis with a test.*
+Working paper, version of 11 October 2026.
+
+*Working paper. Not peer reviewed. The records analysed in Section 8 were recomputed after their outcomes (retrospective); forecasts committed before their outcomes began on 8 October 2026 and are reported separately.*
 
 ## Abstract
 
-Scores that screen newly launched tokens are widely used and almost never validated. We audit the published DryDock score for Arc launches (v1), an additive 0 to 100 index of seven weighted factors with four hard caps \[1\], and report twelve findings. The published weights sum to 90, not 100. The score has no stated estimand, so it cannot be tested. Market-activity factors carry 44% of attainable points, although insiders can manufacture activity and it peaks when entry risk peaks. Insider concentration is thresholded on supply share alone, yet the price impact of an insider exit depends on that share relative to pool depth: under a constant-product pool a 15% stake implies a 47% or an 84% price drop depending on the pool's share of supply. The "profitable trader" wallet label is awarded to 16% to 32% of no-skill wallets at five launches. Under a stated interpolation assumption, a launch whose measured insider share is 20% still scores 76 ("Strong setup") while that cluster's exit would cut a buyer's position by 89%.
+Scores that screen newly launched tokens are widely used and almost never validated. We audit the score DryDock published for Arc launches (v1), an additive 0 to 100 index of weighted factors with hard caps, against its own code, and report twelve findings. The score has no stated estimand, so it cannot be tested. Market-activity factors, which insiders can manufacture, carry 44% of attainable points. Insider holdings are measured against total supply rather than pool depth, so a launch whose insiders hold 20% scores 85 ("Strong setup") although their exit would cut a buyer's position by 89%.
 
-We then specify v2. It replaces points with three quantities that carry units. The *structural floor* is the recovery of a $100 reference position under the worst single structural event available at a given block, computed by simulation. *Channel probabilities* are forecasts of three resolvable on-chain events (tradability loss, liquidity removal, insider exit), calibrated against outcomes. The *Integrity Score* is 100 minus their expected loss. Insider holdings are reported as an identified interval whose pessimistic bound cannot be lowered by Sybil splitting. Price momentum is excluded from the score by construction. Forecasts are committed on-chain before outcomes and scored in public with proper scoring rules. We give five propositions, an eleven-attack analysis, a pre-registered validation protocol with sample sizes, and explicit ship and kill criteria.
+We then specify v2, which replaces points with quantities that carry units. The *structural floor* is what a 100 USDC reference position recovers under the worst single structural event available at a given block (tradability loss, liquidity removal, insider exit), computed by simulating the pool's, hook's and token's own code. Insider holdings form an interval whose pessimistic bound Sybil splitting cannot lower. Records are committed on Arc before outcomes. Calibrated channel probabilities and an expected-loss *Integrity Score* follow only once pre-registered sample-size gates and ship criteria are met.
+
+We report the first data: 202,944 launches from Arc's first three weeks, of which a fixed sample of 9,475 traded launches was recomputed at five ages. Most records abstain, because 99% of launches still unrated at 24 hours have fewer than ten holders. The pre-registered test that floor grades order realised 24-hour loss passes, from 3.5% at grade A to 68.5% at grade E. The test that the loss at an insider-exit event matches the simulation fails (mean error 12.7 points against a 10-point criterion, every error on the safe side); measured at the horizon instead, in an exploratory comparison, the floor is within 2.8 points. The gates for calibrated probabilities are not met. The dataset and code are released.
 
 **Keywords:** token launches, rug pulls, probabilistic forecasting, calibration, proper scoring rules, strategic classification, Sybil resistance, entity resolution, automated market makers, verifiable computation.
 
@@ -20,7 +24,7 @@ Most new tokens fail, and most fail fast. Xia et al. flagged over 10,000 scam to
 
 Buyers decide in seconds, so a single number does most of the work. That number is usually an additive point score built from heuristics. A survey of 14 rug-pull detection tools found they cover 25 of 34 known root causes and miss wash trading, hidden fees and fake liquidity locks \[8\]. We found no launch-scoring product that publishes calibration against outcomes.
 
-DryDock scores every launch from six launchpads on Arc \[3\]. Arc is Circle's EVM Layer 1; public mainnet opened on 16 September 2026 with USDC as gas and block times near half a second \[57\]. The chain was three weeks old on the date of this paper. Any score for it starts with almost no local outcome history.
+DryDock scores every launch from seven launchpads on Arc \[3\]. Arc is Circle's EVM Layer 1; public mainnet opened on 16 September 2026 with USDC as gas and block times near half a second \[57\]. The chain was less than four weeks old on the date of this paper. Any score for it starts with almost no local outcome history.
 
 ### 1.2 The thesis
 
@@ -34,7 +38,8 @@ This is the standard DryDock's own research applies to launches. The verifiable-
 2. A scoring protocol, v2, built on three unit-bearing quantities: a simulated structural floor, calibrated channel probabilities and an expected-loss Integrity Score (Section 5).
 3. A manipulation-resistance analysis covering eleven attacks, with five propositions on what an adversary can and cannot move (Section 6).
 4. A pre-registered validation protocol with baselines, metrics, sample sizes, and ship and kill criteria (Section 7).
-5. A verifiability scheme in which forecasts are committed on-chain before outcomes resolve, so the track record cannot be edited after the fact (Section 10).
+5. An implementation and the first data: every launch from Arc's first three weeks, a retrospective sample of 47,375 records with outcomes, the pre-registered tests that the data can support, and a real worked example (Sections 8 and 9).
+6. A verifiability scheme in which forecasts are committed on-chain before outcomes resolve, so the track record cannot be edited after the fact (Section 10).
 
 ### 1.4 Method and scope
 
@@ -747,7 +752,7 @@ We put eight objections to the paper that a hostile referee would raise. Two of 
 
 **Objection 1. The audit attacks a summary page, not the system.** Accepted and resolved: Section 3.3 checks every finding against the v1 source code. Ten of twelve hold; F1's conclusion was wrong because the code normalised the score, and F11 used a slightly different rule than the page described. The page is still what users were told, so its inaccuracies are findings in their own right.
 
-**Objection 2. The floor will grade nearly everything E.** Accepted as a real risk, and the design is changed. If more than 80% of launches on a launchpad share one Stage 0 grade, the letter is replaced on that launchpad by the floor interval and its percentile rank among launches of the same age. The grade distribution is reported monthly.
+**Objection 2. The floor will grade nearly everything E.** Accepted as a real risk, and the design is changed. If more than 80% of launches on a launchpad share one Stage 0 grade, the letter is replaced on that launchpad by the floor interval and its percentile rank among launches of the same age. The grade distribution is reported monthly. In the first data the risk did not materialise: among rated records, grade A is the most common on Argus (57%) and Tolly (34%), and no launchpad has more than 80% of its rated records in one grade (Section 8.2; Arcora's eight rated records are too few to judge).
 
 **Objection 3. Dropping demand and momentum discards the best predictors.** Speed of accumulation is the strongest predictor of graduation on Pump.fun \[10\]. Graduation is a different estimand from structural failure. Those variables remain visible in the market panel, H6 measures what the score loses, and the paper accepts that loss in exchange for Proposition 4. A product that forecasts upside is a legitimate separate product with a different threat model.
 
@@ -757,9 +762,9 @@ We put eight objections to the paper that a hostile referee would raise. Two of 
 
 **Objection 6. A public specification helps attackers.** It does help the aged-wallet attacker, who learns the history margin. The alternative is a score nobody can check, which fails R7 and R8 and the standard of \[4\]. Proposition 5 shows that the other routes to a better score are routes to a safer launch.
 
-**Objection 7. The independence test will exclude honest newcomers and so penalise fair launches.** Accepted, and the design is changed. The pessimistic set is never shown alone. Every display carries both ends of the interval, and the forecasting layer, not a rule, decides how much the pessimistic end matters once outcomes exist.
+**Objection 7. The independence test will exclude honest newcomers and so penalise fair launches.** Accepted, and the design is changed. The pessimistic set is never shown alone. Every display carries both ends of the interval, and the forecasting layer, not a rule, decides how much the pessimistic end matters once outcomes exist. On Arc's first three weeks the cost is visible: the pessimistic set holds every holder in 63% of records (Section 8.3).
 
-**Objection 8. The author both proposes and evaluates.** Accepted. The remedy is structural: forecasts are committed before outcomes, baselines include the strongest version of v1, the data and code are released with this paper (Appendix C), and independent replication is invited. The author also built the implementation, so a defect in it could bias the results in either direction; every record can be recomputed from public chain state with the released code. Citations were checked to the differing degrees stated in the verification note.
+**Objection 8. The author both proposes and evaluates.** Accepted. The remedy is structural: forecasts are committed before outcomes, baselines include the strongest version of v1, the data and code are released with this paper (Appendix C), and independent replication is invited. The author also built the implementation, so a defect in it could bias the results in either direction. One did: the first backfill valued held positions against a pool that lacked their own purchase, which made grade A look worst, and it was found and corrected before any result was written (D13). Every record can be recomputed from public chain state with the released code. Citations were checked to the differing degrees stated in the verification note.
 
 ## 13. Conclusion and roadmap
 
@@ -773,7 +778,7 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 
 1. **Corrections to v1.** Superseded: DryDock retired v1 entirely on 8 October 2026 instead of correcting it. v1 survives only as the baselines B1 and B2 (Appendix C).
 2. **Stage 0.** Done on 8 October 2026: the simulator, the two insider sets, the registry and the abstentions are live, and the floor interval with its losses given event is the headline on every token page. Records are issued at the five landmarks, batched for the ForecastLedger and resolved after 24 hours. *Gate: a third party reproduces a sample of published floors from its own archive node. Open.*
-3. **Shadow.** Governed by the sample-size counts of Section 7.5, reported in Section 8.4; a channel model is fitted only once they are met. The scoreboard is live for the committed record.
+3. **Shadow.** Not started: the sample-size counts of Section 7.5 are not met (876 resolved records, 214 creators, no tradability or liquidity events; Section 8.4), so no channel model is fitted. The scoreboard is live for the committed record.
 4. **Stage 1.** Pending. *Gate: H2 and H3.*
 5. **Stage 2.** Pending. *Gate: all five ship criteria of Section 7.6.*
 6. **External review.** Data and code are released with this version and the paper is posted as a working paper. Replication and red-teaming are invited; peer review is pending.
