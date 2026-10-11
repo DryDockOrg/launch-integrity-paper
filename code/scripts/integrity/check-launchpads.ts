@@ -13,7 +13,8 @@
  *
  *   npx tsx scripts/integrity/check-launchpads.ts
  */
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { decodeFunctionResult, encodeFunctionData, parseAbi, type Hex } from "viem";
 import { assessLaunch } from "../../lib/integrity";
 import { multicall } from "../../lib/integrity/evidence";
@@ -23,13 +24,13 @@ import type { LaunchInfo } from "../../lib/integrity/types";
 import { CHAIN } from "../../lib/launchpads";
 import { storeReader } from "./backfill/reader";
 import { db } from "./backfill/store";
-import { call } from "./archive";
+import { DATA_DIR, call } from "./archive";
 
 const head = Number(await call<string>("eth_blockNumber", []));
 const reader = storeReader(head);
 const rows = db.prepare(`SELECT r.token, r.landmark, r.block, r.launchpad, r.state FROM records r
   WHERE r.landmark >= 0 AND r.state IN ('rated', 'too_early') ORDER BY (r.state = 'rated') DESC, r.block DESC`).all() as Array<{ token: string; landmark: number; block: number; launchpad: string; state: string }>;
-const launches = new Map((JSON.parse((await import("node:fs")).readFileSync(`${process.env.HOME}/drydock-data/launch-integrity/launches.json`, "utf8")) as Array<Record<string, unknown>>).map((launch) => [launch.token as string, launch]));
+const launches = new Map((JSON.parse(readFileSync(join(DATA_DIR, "launches.json"), "utf8")) as Array<Record<string, unknown>>).map((launch) => [launch.token as string, launch]));
 const first = new Map((JSON.parse((db.prepare("SELECT v FROM kv WHERE k = 'first_trades'").get() as { v: string }).v) as Array<[string, number]>));
 
 const pick = new Map<string, Array<(typeof rows)[number]>>();
