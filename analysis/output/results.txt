@@ -1,0 +1,27 @@
+Launches 202944, traded 78223
+  arcora   launches     11 traded     11
+  arcpad   launches    164 traded    130
+  argus    launches 180434 traded  56534
+  lift     launches  18285 traded  18214
+  o1       launches   1872 traded   1612
+  sashimi  launches      1 traded      1
+  tolly    launches   2177 traded   1721
+Records 47375 (launches with records 9475); failed launches 0
+  1 min  rated 58, too_early 7672, unobservable 1745
+  10 min rated 185, too_early 7545, unobservable 1745
+  1 h    rated 215, too_early 7515, unobservable 1745
+  6 h    rated 214, too_early 7516, unobservable 1745
+  24 h   rated 204, too_early 7526, unobservable 1745
+Pessimistic set as share of holders: median 1.000, mean 0.647; records where it holds every holder 0.632
+  grades arcora   A 1 (12%) B 1 (12%) C 1 (12%) D 0 (0%) E 5 (62%)
+  grades argus    A 438 (57%) B 102 (13%) C 54 (7%) D 68 (9%) E 105 (14%)
+  grades lift     A 2 (40%) B 2 (40%) C 1 (20%) D 0 (0%) E 0 (0%)
+  grades tolly    A 33 (34%) B 22 (23%) C 24 (25%) D 16 (17%) E 1 (1%)
+H1 I: events 70, mean |realised - predicted| 43.38, passes False
+H1 L: events 0, mean |realised - predicted| None, passes False
+H1 T: events 0, mean |realised - predicted| None, passes False
+H4: A n=474 loss=0.912, B n=127 loss=0.500, C n=80 loss=0.413, D n=84 loss=0.594, E n=111 loss=0.717; monotone False
+    Jonckheere-Terpstra z=-11.92 p=1
+Gates: resolved 876 (rated 876), creators 4066, events {'T': 0, 'L': 0, 'I': 127}, met False
+B0 (insider exit, out of time, 286 test records, 17 events): Brier 0.0591
+B1 v1 isotonic: Brier 0.0748, AUC 0.580; floor lower end AUC 0.461

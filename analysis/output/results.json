@@ -1,0 +1,271 @@
+{
+  "population": {
+    "arcora": {
+      "launches": 11,
+      "traded": 11
+    },
+    "arcpad": {
+      "launches": 164,
+      "traded": 130
+    },
+    "argus": {
+      "launches": 180434,
+      "traded": 56534
+    },
+    "lift": {
+      "launches": 18285,
+      "traded": 18214
+    },
+    "o1": {
+      "launches": 1872,
+      "traded": 1612
+    },
+    "sashimi": {
+      "launches": 1,
+      "traded": 1
+    },
+    "tolly": {
+      "launches": 2177,
+      "traded": 1721
+    }
+  },
+  "population_total": {
+    "launches": 202944,
+    "traded": 78223,
+    "first_block": 21068660,
+    "last_block": 24811814
+  },
+  "states": {
+    "1 min": {
+      "rated": 58,
+      "too_early": 7672,
+      "unobservable": 1745
+    },
+    "10 min": {
+      "rated": 185,
+      "too_early": 7545,
+      "unobservable": 1745
+    },
+    "1 h": {
+      "rated": 215,
+      "too_early": 7515,
+      "unobservable": 1745
+    },
+    "6 h": {
+      "rated": 214,
+      "too_early": 7516,
+      "unobservable": 1745
+    },
+    "24 h": {
+      "rated": 204,
+      "too_early": 7526,
+      "unobservable": 1745
+    }
+  },
+  "abstention_reasons": {
+    "N independent entities have bought outside the insider set; ratings start at N.": 31302,
+    "The token or its hook is not a registered template, so what a privileged call could do cannot be bounded.": 8725,
+    "N independent entity has bought outside the insider set; ratings start at N.": 6472
+  },
+  "pessimistic_share_of_holders": {
+    "median": 1.0,
+    "mean": 0.6472954106132778,
+    "share_of_records_all_holders": 0.6317255936675462
+  },
+  "history_pass_share": {
+    "median": 0.0,
+    "mean": 0.008581659237502433
+  },
+  "grade_distribution": {
+    "arcora": {
+      "A": 1,
+      "B": 1,
+      "C": 1,
+      "D": 0,
+      "E": 5
+    },
+    "argus": {
+      "A": 438,
+      "B": 102,
+      "C": 54,
+      "D": 68,
+      "E": 105
+    },
+    "lift": {
+      "A": 2,
+      "B": 2,
+      "C": 1,
+      "D": 0,
+      "E": 0
+    },
+    "tolly": {
+      "A": 33,
+      "B": 22,
+      "C": 24,
+      "D": 16,
+      "E": 1
+    }
+  },
+  "h1": {
+    "I": {
+      "events": 70,
+      "mean_abs_error": 43.381272345544005,
+      "mean_error": -22.276398756079704,
+      "median_abs_error": 37.195315439226285,
+      "passes": false,
+      "mean_abs_error_vs_lower_bound": 40.450534531737766
+    },
+    "L": {
+      "events": 0,
+      "mean_abs_error": null,
+      "mean_error": null,
+      "median_abs_error": null,
+      "passes": false
+    },
+    "T": {
+      "events": 0,
+      "mean_abs_error": null,
+      "mean_error": null,
+      "median_abs_error": null,
+      "passes": false
+    }
+  },
+  "h4": {
+    "by_grade": {
+      "A": {
+        "n": 474,
+        "mean_loss": 0.9115261243248944,
+        "severe": 0.8945147679324894
+      },
+      "B": {
+        "n": 127,
+        "mean_loss": 0.49972385984251966,
+        "severe": 0.3700787401574803
+      },
+      "C": {
+        "n": 80,
+        "mean_loss": 0.412905375625,
+        "severe": 0.2
+      },
+      "D": {
+        "n": 84,
+        "mean_loss": 0.5938907070238095,
+        "severe": 0.21428571428571427
+      },
+      "E": {
+        "n": 111,
+        "mean_loss": 0.7168925722522523,
+        "severe": 0.6306306306306306
+      }
+    },
+    "grades_present": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "monotone": false,
+    "jonckheere": {
+      "statistic": 78112.0,
+      "z": -11.91781737874494,
+      "p": 1.0
+    },
+    "per_landmark": {
+      "1 min": {
+        "n": 58,
+        "means": {
+          "A": 0.9791579883333332,
+          "B": 0.7571728825,
+          "C": 0.7916324422222222,
+          "D": 0.8713376660000001,
+          "E": 0.6923762069999999
+        },
+        "monotone": false
+      },
+      "10 min": {
+        "n": 185,
+        "means": {
+          "A": 0.9311048785483871,
+          "B": 0.6184905079166666,
+          "C": 0.47874306,
+          "D": 0.655115666,
+          "E": 0.8670312525862071
+        },
+        "monotone": false
+      },
+      "1 h": {
+        "n": 215,
+        "means": {
+          "A": 0.9406651369354838,
+          "B": 0.48798249620689654,
+          "C": 0.5451557499999999,
+          "D": 0.574038209047619,
+          "E": 0.5996908015000002
+        },
+        "monotone": false
+      },
+      "6 h": {
+        "n": 214,
+        "means": {
+          "A": 0.9044888641304347,
+          "B": 0.44548609387096777,
+          "C": 0.2463760078947368,
+          "D": 0.3822516675,
+          "E": 0.4795035385714286
+        },
+        "monotone": false
+      },
+      "24 h": {
+        "n": 204,
+        "means": {
+          "A": 0.8777032200724638,
+          "B": 0.3733394232258064,
+          "C": 0.14122894733333335,
+          "D": 0.3451854863636364,
+          "E": 0.4062928033333333
+        },
+        "monotone": false
+      }
+    },
+    "passes": false
+  },
+  "gates": {
+    "resolved": 876,
+    "resolved_rated": 876,
+    "creators": 4066,
+    "events": {
+      "T": 0,
+      "L": 0,
+      "I": 127
+    },
+    "met": false
+  },
+  "baselines_descriptive": {
+    "train": 525,
+    "test": 286,
+    "events_test": 17,
+    "brier": 0.05906529583933169,
+    "log": 0.24151869104658819,
+    "murphy": {
+      "reliability": 0.002247010030721783,
+      "resolution": 1.8733863502447797e-05,
+      "uncertainty": 0.055907379333952754
+    },
+    "b1": {
+      "n": 286,
+      "brier": 0.07481367529662225,
+      "log": 0.30287198807356575,
+      "auc": 0.5795976383118303,
+      "pr_auc": 0.07578781511694924
+    },
+    "auc_floor_low": 0.46063853050513887
+  },
+  "severe_loss_rate": {
+    "1 min": 0.7068965517241379,
+    "10 min": 0.7243243243243244,
+    "1 h": 0.6651162790697674,
+    "6 h": 0.6214953271028038,
+    "24 h": 0.6078431372549019
+  }
+}

@@ -63,10 +63,11 @@ pd.DataFrame(rows).to_csv(os.path.join(DATA, "records.csv.gz"), index=False)
 
 # Committed records, as published by the API (batches and their records).
 committed = []
+fetch = lambda url: json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "launch-integrity-dataset/1.0"}), timeout=60))
 try:
-    batches = json.load(urllib.request.urlopen("https://api.drydockprotocol.org/v1/integrity/batches", timeout=60))["batches"]
+    batches = fetch("https://api.drydockprotocol.org/v1/integrity/batches")["batches"]
     for batch in batches:
-        body = json.load(urllib.request.urlopen("https://api.drydockprotocol.org/v1/integrity/batch/%d" % batch["seq"], timeout=60))
+        body = fetch("https://api.drydockprotocol.org/v1/integrity/batch/%d" % batch["seq"])
         for item in body["records"]:
             committed.append({"batch": batch["seq"], "root": batch["root"], "tx": batch["tx"], "committed_block": batch["committed_block"], "id": item["id"], "token": item["token"],
                               "launchpad": item["launchpad"], "landmark": item["landmark"], "block": item["block"], "leaf": item["leaf"], "state": item["record"]["state"],
