@@ -376,5 +376,21 @@
     "1 h": 0.04186046511627907,
     "6 h": 0.009345794392523364,
     "24 h": 0.004901960784313725
+  },
+  "committed": {
+    "records": 17793,
+    "batches": 968,
+    "first_block": 24825515,
+    "last_block": 25607224,
+    "states": {
+      "too_early": 17500,
+      "rated": 278,
+      "unobservable": 15
+    },
+    "rated_share": 0.015624121845669645,
+    "roots_on_chain": 0,
+    "in_deadline": 0,
+    "launches": 4122,
+    "backfill_rated_share": 0.018490765171503956
   }
 }

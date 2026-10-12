@@ -29,3 +29,4 @@ Example: 0x517b95ae1f8ccafaba3d84eb66e9df007b2ca88a (tolly) at block 21094790, g
 Gates: resolved 876 (rated 876), creators 214, events {'T': 0, 'L': 0, 'I': 127}, met False
 B0 (insider exit, out of time, 286 test records, 17 events): Brier 0.0591
 B1 v1 isotonic: Brier 0.0748, AUC 0.580; floor lower end AUC 0.461
+Committed record: 17793 records in 968 batches, 0 roots on chain, 0 within the deadline; rated 1.56% (backfill 1.85%)

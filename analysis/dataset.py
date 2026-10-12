@@ -65,7 +65,13 @@ pd.DataFrame(rows).to_csv(os.path.join(DATA, "records.csv.gz"), index=False)
 committed = []
 fetch = lambda url: json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "launch-integrity-dataset/1.0"}), timeout=60))
 try:
-    batches = fetch("https://api.drydockprotocol.org/v1/integrity/batches")["batches"]
+    batches, after = [], 0
+    while True:  # the endpoint returns 500 batches per page, after a given sequence number
+        page = fetch("https://api.drydockprotocol.org/v1/integrity/batches?after=%d" % after)["batches"]
+        batches += page
+        if len(page) < 500:
+            break
+        after = page[-1]["seq"]
     for batch in batches:
         body = fetch("https://api.drydockprotocol.org/v1/integrity/batch/%d" % batch["seq"])
         for item in body["records"]:

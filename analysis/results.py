@@ -179,6 +179,19 @@ if b0:
 # --- Severe loss overall, for the market panel's reference line
 results["severe_loss_rate"] = {LANDMARKS[int(k)]: float(g.severe_loss.mean()) for k, g in valid[valid.resolved].groupby("landmark")}
 
+# --- The committed record (Section 8.6): records issued live and batched for the ledger, as the API publishes them
+committed_path = os.path.join(DATA, "committed.csv.gz")
+committed = pd.read_csv(committed_path) if os.path.getsize(committed_path) > 64 else pd.DataFrame()
+if len(committed):
+    states_live = committed.state.value_counts()
+    results["committed"] = {"records": int(len(committed)), "batches": int(committed.batch.nunique()), "first_block": int(committed.block.min()), "last_block": int(committed.block.max()),
+                            "states": {k: int(v) for k, v in states_live.items()}, "rated_share": float((committed.state == "rated").mean()),
+                            "roots_on_chain": int(committed.drop_duplicates("batch").tx.notna().sum()),
+                            "in_deadline": int(((committed.committed_block.notna()) & (committed.committed_block <= committed.block + 1200)).sum()),
+                            "launches": int(committed.token.nunique()), "backfill_rated_share": float((valid.state == "rated").mean())}
+    say("Committed record: %d records in %d batches, %d roots on chain, %d within the deadline; rated %.2f%% (backfill %.2f%%)" % (
+        len(committed), committed.batch.nunique(), results["committed"]["roots_on_chain"], results["committed"]["in_deadline"], 100 * results["committed"]["rated_share"], 100 * results["committed"]["backfill_rated_share"]))
+
 with open(os.path.join(OUT, "results.json"), "w") as handle:
     json.dump(results, handle, indent=2, default=float)
 with open(os.path.join(OUT, "results.txt"), "w") as handle:
