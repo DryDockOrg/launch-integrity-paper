@@ -2,7 +2,7 @@
 
 Farbod Ghasemlu · Drydock Org · ORCID [0009-0009-2303-5672](https://orcid.org/0009-0009-2303-5672) · farbodghasemlu@outlook.com
 
-Working paper, version of 11 October 2026.
+Working paper, version of 12 October 2026.
 
 *Working paper. Not peer reviewed. The records analysed in Section 8 were recomputed after their outcomes (retrospective); forecasts committed before their outcomes began on 8 October 2026 and are reported separately.*
 
