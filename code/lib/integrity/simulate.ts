@@ -23,7 +23,8 @@ export interface StateOverride { code?: Hex; balance?: bigint; stateDiff?: Recor
 /** Executes eth_call(to, data) at `block` with state overrides and returns the return data. */
 export type EthCall = (request: { to: string; data: Hex; gas: bigint }, block: number, overrides: Record<string, StateOverride>) => Promise<Hex>;
 
-export interface Step { kind: 0 | 1 | 2 | 3; actor: string; target: string; data: Hex; amount: bigint }
+/** Step kinds: 0 call as the actor, 1 sell its whole balance, 2 buy, 3 withdraw a V4 position, 4 mark its balance, 5 sell what arrived since the mark. */
+export interface Step { kind: 0 | 1 | 2 | 3 | 4 | 5; actor: string; target: string; data: Hex; amount: bigint }
 export interface Scenario { name: string; notional: bigint; steps: Step[]; actors: string[]; stateDiff?: Record<string, Record<Hex, Hex>> }
 export interface Outcome { bought: boolean; tokens: bigint; recovered: bigint; sold: boolean; stepsFailed: bigint; eventUsdc: bigint }
 
@@ -149,11 +150,35 @@ export function withdrawalSteps(launch: LaunchInfo, position: LiquidityPosition)
  * `maxIndividualSellers`, the remaining balance is credited to one extra seller through a storage
  * override of the token's balance mapping (when the slot is known), which keeps the call inside the gas cap.
  */
-export function exitScenario(name: string, members: Map<string, bigint>, balanceSlot: BalanceSlot | null, token: string): Scenario {
-  const ordered = [...members.entries()].filter(([, balance]) => balance > 0n).sort((a, b) => (a[1] === b[1] ? (a[0] < b[0] ? -1 : 1) : a[1] > b[1] ? -1 : 1));
+/**
+ * Liquidity event (Appendix A.2, step 6): every withdrawable position is withdrawn by its owner, and each owner sells
+ * what the withdrawal returned (method 2.1.0), never tokens it already held.
+ */
+export function liquiditySteps(launch: LaunchInfo, withdrawable: LiquidityPosition[]): Step[] {
+  const owners = [...new Set(withdrawable.map((position) => position.owner))];
+  return owners.flatMap((owner) => [
+    { kind: 4 as const, actor: owner, target: ZERO, data: "0x" as Hex, amount: 0n },
+    ...withdrawable.filter((position) => position.owner === owner).flatMap((position) => withdrawalSteps(launch, position)),
+    { kind: 5 as const, actor: owner, target: ZERO, data: "0x" as Hex, amount: 0n },
+  ]);
+}
+
+/**
+ * Insider exit (Appendix A.2, step 7). Members sell largest first; a member that owns withdrawable positions first
+ * withdraws them, so tokens parked in liquidity count toward its exit (method 2.1.0).
+ */
+export function exitScenario(name: string, members: Map<string, bigint>, balanceSlot: BalanceSlot | null, token: string, launch?: LaunchInfo, withdrawable: LiquidityPosition[] = []): Scenario {
+  const parked = withdrawable.filter((position) => members.has(position.owner));
+  const owners = new Set(parked.map((position) => position.owner));
+  const ordered = [...members.entries()].filter(([address, balance]) => balance > 0n || owners.has(address))
+    // Owners of parked positions always sell individually (they must withdraw first), then the rest by balance.
+    .sort((a, b) => (owners.has(a[0]) !== owners.has(b[0]) ? (owners.has(a[0]) ? -1 : 1) : a[1] === b[1] ? (a[0] < b[0] ? -1 : 1) : a[1] > b[1] ? -1 : 1));
   const individual = ordered.slice(0, PARAMS.maxIndividualSellers);
   const tail = ordered.slice(PARAMS.maxIndividualSellers);
-  const steps: Step[] = individual.map(([actor]) => ({ kind: 1, actor, target: ZERO, data: "0x", amount: 0n }));
+  const steps: Step[] = individual.flatMap(([actor]): Step[] => [
+    ...(launch ? parked.filter((position) => position.owner === actor).flatMap((position) => withdrawalSteps(launch, position)) : []),
+    { kind: 1, actor, target: ZERO, data: "0x", amount: 0n },
+  ]);
   const actors = individual.map(([actor]) => actor);
   let stateDiff: Scenario["stateDiff"];
   if (tail.length) {

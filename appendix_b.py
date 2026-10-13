@@ -78,31 +78,34 @@ def buy(x, y, usd):
 def sell(x, y, tok):
     a = tok * (1 - phi); out = x * a / (y + a); return out, x - out, y + tok
 q, x1, y1 = buy(x0, g * S, B)
-print('S8 friction: 100 USDC returns %.1f' % sell(x1, y1, q)[0])
+rho0 = sell(x1, y1, q)[0]
+print('S9.2 friction: 100 USDC returns %.1f' % rho0)
 for name, f in (('lower-bound set, 8%', .08), ('pessimistic set, 20%', .20)):
     got, x2, y2 = sell(x1, y1, f * S)
     r = sell(x2, y2, q)[0]
-    print('S8 insider exit as one block, %s: insiders take %.0f USDC (%.0f%% of pool); reference returns %.1f; loss %.1f%%'
+    print('S9.2 insider exit as one block, %s: insiders take %.0f USDC (%.0f%% of pool); reference returns %.1f; loss %.1f%%'
           % (name, got, 100 * got / x1, r, 100 - r))
+    # Integrity Score as amended (Section 5.5): friction once, and before any outcomes the loss given event is the
+    # simulated worst case net of friction, 1 - r / rho0.
     for pi in (.10, .30, .60):
-        print('   assumed pi=%.2f -> Integrity Score %.0f' % (pi, 100 * (1 - pi * (1 - r / 100))))
+        print('   assumed pi=%.2f -> Integrity Score %.0f' % (pi, rho0 * (1 - pi * (1 - r / rho0))))
 # Appendix A.2 sells address by address, largest first. With the split of Section 9.2 (creator 4%, two
 # launch-block buyers 2% each; six fresh wallets 2% each) and fees retained in the pool:
 for name, parts in (('lower-bound set', [.04, .02, .02]), ('pessimistic set', [.04, .02, .02] + [.02] * 6)):
     x, y = x1, y1
     for f in sorted(parts, reverse=True):
         _, x, y = sell(x, y, f * S)
-    print('S8 insider exit address by address, %s: reference returns %.2f' % (name, sell(x, y, q)[0]))
+    print('S9.2 insider exit address by address, %s: reference returns %.2f' % (name, sell(x, y, q)[0]))
 # Uniswap V3 and V4 keep fees outside active liquidity; with fees outside the pool the same example gives:
 def sell_ext(x, y, tok):
     a = tok * (1 - phi); out = x * a / (y + a); return out, x - out, y + a
 def buy_ext(x, y, usd):
     a = usd * (1 - phi); out = y * a / (x + a); return out, x + a, y - out
 q2, xa, ya = buy_ext(x0, g * S, B)
-print('S8 fees outside the pool: friction %.1f' % sell_ext(xa, ya, q2)[0])
+print('S9.2 fees outside the pool: friction %.1f' % sell_ext(xa, ya, q2)[0])
 for f in (.08, .20):
     _, xb, yb = sell_ext(xa, ya, f * S)
-    print('S8 fees outside the pool, exit of %.0f%%: reference returns %.1f' % (100 * f, sell_ext(xb, yb, q2)[0]))
+    print('S9.2 fees outside the pool, exit of %.0f%%: reference returns %.1f' % (100 * f, sell_ext(xb, yb, q2)[0]))
 
 # --- Section 7.5: sample sizes
 z = stats.norm.ppf(.975)
@@ -113,3 +116,12 @@ def se_auc(A, n1, n0):  # Hanley and McNeil (1982)
     return np.sqrt((A * (1 - A) + (n1 - 1) * (Q1 - A * A) + (n0 - 1) * (Q2 - A * A)) / (n1 * n0))
 for N in (500, 2000):
     print('S7.5 AUC 0.75, N=%d, prevalence 0.2: 95%% half-width %.3f' % (N, z * se_auc(.75, int(.2 * N), N - int(.2 * N))))
+
+# --- Section 6.3: cost of an aged-wallet farm (gaming class (d), audit finding M1). A wallet passes the history
+# margin with at least one transaction 30 days before the token's creation and at least ten before it, so each
+# farm wallet needs ten transactions it sends itself. Gas price observed on Arc on 13 October 2026 (eth_gasPrice).
+GAS_PRICE_GWEI, TRANSFER_GAS = 20, 21_000
+per_tx = TRANSFER_GAS * GAS_PRICE_GWEI * 1e9 / 1e18  # USDC (Arc's gas token, 18 decimals)
+for wallets in (100, 1000):
+    print('S6.3 aged-wallet farm of %d wallets: %d transactions, %.2f USDC of gas, ready 30 days after its first transaction'
+          % (wallets, 10 * wallets, 10 * wallets * per_tx))

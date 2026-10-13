@@ -4,10 +4,16 @@ The code that produced the records analysed in the paper: the facts layer (simul
 abstentions), forecast records and their Merkle commitment, the resolver, the backfill, and v1 kept runnable as
 the baselines B1 and B2. It runs with Node 24.
 
-This is a snapshot of DryDock's implementation at method 2.0.3. Some identifiers and comments were renamed to
-neutral terms and the RPC endpoints moved to configuration; behaviour is unchanged. That was checked by recomputing
-30 published records (21 of them rated, with resolutions) with this snapshot against the same chain data: every
-record hash and every resolution is identical.
+This is a snapshot of DryDock's implementation at method 2.1.0 (the version registered in Section 7.9). The records
+of Section 8 were computed under method 2.0.3: to reproduce them, use this folder at the tag `v2026-10-12`. Some
+identifiers and comments were renamed to neutral terms and the RPC endpoints moved to configuration; behaviour is
+unchanged. For the 2.0.3 snapshot that was checked by recomputing 30 published records (21 of them rated, with
+resolutions) against the same chain data: every record hash and every resolution was identical. The 2.1.0 snapshot
+uses the same renaming and carries the same version hashes as DryDock's code.
+
+`scripts/integrity/backfill/resolve-version.ts` recomputes the rated records with the method version of the code
+tree it sits in (Table D2 of the paper), and `scripts/integrity/backfill/prices.ts` writes the price multiples of
+baseline B5.
 
 ## Setup
 

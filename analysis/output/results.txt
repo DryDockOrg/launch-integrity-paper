@@ -29,4 +29,7 @@ Example: 0x517b95ae1f8ccafaba3d84eb66e9df007b2ca88a (tolly) at block 21094790, g
 Gates: resolved 876 (rated 876), creators 214, events {'T': 0, 'L': 0, 'I': 127}, met False
 B0 (insider exit, out of time, 286 test records, 17 events): Brier 0.0591
 B1 v1 isotonic: Brier 0.0748, AUC 0.580; floor lower end AUC 0.461
+Audit: below the floor by more than 0.5 point 22 of 876 (2.5%); floor_low = pessimistic exit in 100%; Spearman with horizon recovery: floor 0.79, B4 -0.70, B5 -0.67, take -0.72, v1 -0.48
+Method 2.0.2 on the rated records: 876 rated, floors changed 0, grades changed 0, losses by grade A 0.912, B 0.500, C 0.413, D 0.594, E 0.717, monotone False
+Method 2.1.0 on the rated records: 876 rated, floors changed 5, grades changed 0, losses by grade A 0.035, B 0.111, C 0.245, D 0.513, E 0.685, monotone True
 Committed record: 17793 records in 968 batches, 0 roots on chain, 0 within the deadline; rated 1.56% (backfill 1.85%)

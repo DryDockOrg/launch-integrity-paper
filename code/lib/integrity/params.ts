@@ -3,7 +3,7 @@
  * implementation forced: the funding lookback. Every value here enters `PARAMS_HASH`, which every
  * forecast record carries, so a change to any of them is a new parameter version.
  */
-export const SPEC_VERSION = "2.0.3";
+export const SPEC_VERSION = "2.1.0";
 
 export const PARAMS = {
   /** Reference notional, USDC with 6 decimals. */

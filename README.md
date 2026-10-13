@@ -2,7 +2,7 @@
 
 **A verifiable, manipulation-aware scoring protocol for newly launched tokens.**
 
-Farbod Ghasemlu, Drydock Org. Working paper, version of 12 October 2026.
+Farbod Ghasemlu, Drydock Org. Working paper, version of 13 October 2026.
 
 This repository holds the paper, its data and the code behind every number in it.
 

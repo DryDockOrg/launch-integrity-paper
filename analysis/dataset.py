@@ -29,6 +29,10 @@ launches = launches.merge(first, on="pool", how="left")
 launches["traded"] = launches.first_trade.notna()
 launches[["token", "launchpad", "creator", "protocol", "pool", "fee", "hooks", "block", "tx", "symbol", "first_trade", "traded"]].to_csv(os.path.join(DATA, "launches.csv.gz"), index=False)
 
+supply_of = {row["token"]: int(row["supply"]) for row in json.load(open(launches_json))}
+prices = {}
+if con.execute("SELECT 1 FROM sqlite_master WHERE name = 'record_prices'").fetchone():
+    prices = {(t, l): m for t, l, m in con.execute("SELECT token, landmark, multiple FROM record_prices")}
 rows = []
 for token, landmark, launchpad, creator, block, ts, state, grade, leaf, record, facts, resolution, v1, error in con.execute(
         "SELECT token, landmark, launchpad, creator, block, ts, state, grade, leaf, record, facts, resolution, v1, error FROM records"):
@@ -51,6 +55,8 @@ for token, landmark, launchpad, creator, block, ts, state, grade, leaf, record, 
         "insider_outflow": r.get("insiderOutflow"), "liquidity_withdrawn": r.get("liquidityWithdrawn"),
         "v1_score_1001": (v.get("2026-10-01") or {}).get("score"), "v1_score_1007": (v.get("2026-10-07") or {}).get("score"),
         "v1_factors_1007": json.dumps((v.get("2026-10-07") or {}).get("factors")) if v else None,
+        "pessimistic_supply_share": (int(ins["pessimisticBalance"]) / supply_of[token]) if ins.get("pessimisticBalance") is not None and supply_of.get(token) else None,
+        "price_multiple": prices.get((token, landmark)),
         "error": error, "retrospective": True,
     }
     for channel in "TLI":
@@ -61,10 +67,26 @@ for token, landmark, launchpad, creator, block, ts, state, grade, leaf, record, 
     rows.append(row)
 pd.DataFrame(rows).to_csv(os.path.join(DATA, "records.csv.gz"), index=False)
 
+# The rated records recomputed under other method versions (backfill/resolve-version.ts): 2.0.2, before the fix of
+# deviation D13, and 2.1.0, which counts tokens parked in withdrawable liquidity.
+versions = []
+for table in ("records_v202", "records_v210"):
+    if not con.execute("SELECT 1 FROM sqlite_master WHERE name = ?", (table,)).fetchone():
+        continue
+    for token, landmark, version, state, grade, low, high, resolution, error in con.execute("SELECT token, landmark, version, state, grade, floor_low, floor_high, resolution, error FROM %s" % table):
+        r = json.loads(resolution) if resolution else {}
+        versions.append({"token": token, "landmark": landmark, "version": version, "state": state, "grade": grade, "floor_low": low, "floor_high": high,
+                         "recovery_at_horizon": r.get("recoveryAtHorizon"), "severe_loss": r.get("severeLoss"), "fired_I": (r.get("I") or {}).get("fired") if r else None, "error": error})
+if versions:
+    pd.DataFrame(versions).to_csv(os.path.join(DATA, "method-versions.csv.gz"), index=False)
+
 # Committed records, as published by the API (batches and their records).
 committed = []
+keep = os.environ.get("KEEP_COMMITTED") and os.path.exists(os.path.join(DATA, "committed.csv.gz"))  # reuse the last download
 fetch = lambda url: json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "launch-integrity-dataset/1.0"}), timeout=60))
 try:
+    if keep:
+        raise RuntimeError("kept the existing committed.csv.gz (KEEP_COMMITTED)")
     batches, after = [], 0
     while True:  # the endpoint returns 500 batches per page, after a given sequence number
         page = fetch("https://api.drydockprotocol.org/v1/integrity/batches?after=%d" % after)["batches"]
@@ -80,5 +102,6 @@ try:
                               "floor_low": item["record"]["floorLow"], "floor_high": item["record"]["floorHigh"], "resolution": json.dumps(item["resolution"]) if item["resolution"] else None})
 except Exception as error:  # the committed record is optional for a local rebuild
     print("committed records not fetched:", error)
-pd.DataFrame(committed).to_csv(os.path.join(DATA, "committed.csv.gz"), index=False)
+if not keep:
+    pd.DataFrame(committed).to_csv(os.path.join(DATA, "committed.csv.gz"), index=False)
 print("launches %d, records %d, committed %d" % (len(launches), len(rows), len(committed)))

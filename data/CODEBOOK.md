@@ -1,6 +1,6 @@
 # Codebook
 
-Data for *Calibrated Launch Integrity* (Ghasemlu, 2026), working paper version of 12 October 2026.
+Data for *Calibrated Launch Integrity* (Ghasemlu, 2026), working paper version of 13 October 2026.
 Chain: Arc mainnet (chainId 5042). Addresses are lowercase hex. Blocks are Arc block numbers; `ts` is a Unix
 timestamp (seconds, UTC). Recoveries are in USDC per 100 USDC of the reference position. Written by
 `analysis/dataset.py`; every number in Section 8 of the paper is computed from these files by `analysis/results.py`.
@@ -48,6 +48,8 @@ computed after their outcomes by the same code that issues live records, under m
 | `entities_outside_lower` | Independent purchasing entities outside the lower bound (ratings need 10) |
 | `lower_take_usdc`, `pessimistic_take_usdc` | USDC each set's exit would take from the pool |
 | `history_pass_share` | Share of holders passing the address-history margin |
+| `pessimistic_supply_share` | Pessimistic set's balance as a share of total supply (baseline B4) |
+| `price_multiple` | Pool price at the forecast block over its price after the first swap (baseline B5; rated records) |
 | `withdrawable_positions` | Liquidity positions their owners could withdraw |
 | `flags` | Notes from the facts layer, `;`-separated |
 | `token_template`, `hook_template` | Registry template matched (empty when unregistered) |
@@ -76,3 +78,17 @@ Records issued live from 8 October 2026 and batched for the ForecastLedger, as p
 | `id` | Record id |
 | `token`, `launchpad`, `landmark`, `block`, `leaf`, `state`, `floor_low`, `floor_high` | As in `records.csv.gz` |
 | `resolution` | Resolution JSON, once resolved (rated records only, D14) |
+
+## method-versions.csv.gz
+
+The 876 rated records of `records.csv.gz` recomputed and resolved with the code of two other method versions
+(paper Table D2): 2.0.2, before the fix of deviation D13, and 2.1.0, which counts tokens parked in withdrawable
+liquidity. 1,752 rows.
+
+| Column | Meaning |
+| --- | --- |
+| `token`, `landmark` | As in `records.csv.gz` |
+| `version` | `2.0.2` or `2.1.0` |
+| `state`, `grade`, `floor_low`, `floor_high` | Facts under that version |
+| `recovery_at_horizon`, `severe_loss`, `fired_I` | Resolution under that version |
+| `error` | Error text, if any part failed (none did) |

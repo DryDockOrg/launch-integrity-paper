@@ -5,7 +5,7 @@
 import { insiderSets } from "./entities";
 import { gradeOf, PARAMS, type State } from "./params";
 import { isLocker, rolesFor, templateById } from "./registry";
-import { exitScenario, findBalanceSlot, per100, runScenarios, withdrawalSteps, type EthCall, type Scenario } from "./simulate";
+import { exitScenario, findBalanceSlot, liquiditySteps, per100, runScenarios, type EthCall, type Scenario } from "./simulate";
 import { VERSIONS } from "./versions";
 import type { Evidence, Facts, InsiderSets, LiquidityPosition } from "./types";
 
@@ -58,7 +58,7 @@ export async function computeFacts({ evidence, ethCall, ownerCode }: FactsInput)
   // Worst reachable privileged state. No registered template has a privilege that changes what a sale returns
   // (registry `privileges` lists the roles and why), so the event leaves state as it is.
   const tradabilitySteps: Scenario["steps"] = [];
-  const liquiditySteps = withdrawable.flatMap((position) => withdrawalSteps(launch, position));
+  const liquidity = liquiditySteps(launch, withdrawable);
   const liquidityActors = [...new Set(withdrawable.map((position) => position.owner))];
   const slot = sets.pessimistic.size > PARAMS.maxIndividualSellers ? await findBalanceSlot(ethCall, launch.token, evidence.block, templateById(evidence.code.tokenTemplate)?.plantedSupply ?? null) : null;
   if (sets.pessimistic.size > PARAMS.maxIndividualSellers) flags.push(slot ? "large insider set sold as one block beyond the first 100 sellers" : "large insider set truncated to the gas limit");
@@ -66,9 +66,9 @@ export async function computeFacts({ evidence, ethCall, ownerCode }: FactsInput)
     { name: "friction", notional: PARAMS.notional, steps: [], actors: [] },
     { name: "depth", notional: PARAMS.depthNotional, steps: [], actors: [] },
     { name: "T", notional: PARAMS.notional, steps: tradabilitySteps, actors: [] },
-    { name: "L", notional: PARAMS.notional, steps: liquiditySteps, actors: liquidityActors },
-    exitScenario("ILower", sets.lower, slot, launch.token),
-    exitScenario("IPessimistic", sets.pessimistic, slot, launch.token),
+    { name: "L", notional: PARAMS.notional, steps: liquidity, actors: liquidityActors },
+    exitScenario("ILower", sets.lower, slot, launch.token, launch, withdrawable),
+    exitScenario("IPessimistic", sets.pessimistic, slot, launch.token, launch, withdrawable),
   ];
   // Events with nothing to do leave state as it is, so their recovery is the friction scenario's.
   const needed = scenarios.filter((scenario) => scenario.name === "friction" || scenario.steps.length > 0 || scenario.name === "depth");

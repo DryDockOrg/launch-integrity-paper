@@ -110,3 +110,9 @@ export function merkleProof(leaves: Hex[], leaf: Hex): Hex[] {
 export function verifyProof(root: Hex, leaf: Hex, proof: Hex[]) {
   return proof.reduce((node, sibling) => hashPair(node, sibling), leaf) === root;
 }
+
+/**
+ * DryDock's ForecastLedger and the only account allowed to commit to it. The address is the committer's first
+ * contract creation, reserved before deployment (it has code only once the committer is funded).
+ */
+export const LEDGER = { address: "0xC63FA005E73bED90443A1Ffc9e363f573F04Cf23", committer: "0x8A70858e704DE715c6a79f2d1db22a05D9E29F04" } as const;

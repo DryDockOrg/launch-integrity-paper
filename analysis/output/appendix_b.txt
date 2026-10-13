@@ -37,21 +37,23 @@ S5.8 n=20: needs 15 wins; false positive 0.0003; power at q=.60 0.126
 S5.8 n=30: needs 19 wins; false positive 0.0014; power at q=.60 0.431
 S5.8 n=40: needs 24 wins; false positive 0.0011; power at q=.60 0.568
 S5.8 n=50: needs 28 wins; false positive 0.0019; power at q=.60 0.766
-S8 friction: 100 USDC returns 98.0
-S8 insider exit as one block, lower-bound set, 8%: insiders take 11118 USDC (44% of pool); reference returns 30.3; loss 69.7%
-   assumed pi=0.10 -> Integrity Score 93
-   assumed pi=0.30 -> Integrity Score 79
-   assumed pi=0.60 -> Integrity Score 58
-S8 insider exit as one block, pessimistic set, 20%: insiders take 16699 USDC (67% of pool); reference returns 10.9; loss 89.1%
+S9.2 friction: 100 USDC returns 98.0
+S9.2 insider exit as one block, lower-bound set, 8%: insiders take 11118 USDC (44% of pool); reference returns 30.3; loss 69.7%
    assumed pi=0.10 -> Integrity Score 91
-   assumed pi=0.30 -> Integrity Score 73
-   assumed pi=0.60 -> Integrity Score 47
-S8 insider exit address by address, lower-bound set: reference returns 30.36
-S8 insider exit address by address, pessimistic set: reference returns 10.97
-S8 fees outside the pool: friction 98.0
-S8 fees outside the pool, exit of 8%: reference returns 30.5
-S8 fees outside the pool, exit of 20%: reference returns 11.0
+   assumed pi=0.30 -> Integrity Score 78
+   assumed pi=0.60 -> Integrity Score 57
+S9.2 insider exit as one block, pessimistic set, 20%: insiders take 16699 USDC (67% of pool); reference returns 10.9; loss 89.1%
+   assumed pi=0.10 -> Integrity Score 89
+   assumed pi=0.30 -> Integrity Score 72
+   assumed pi=0.60 -> Integrity Score 46
+S9.2 insider exit address by address, lower-bound set: reference returns 30.36
+S9.2 insider exit address by address, pessimistic set: reference returns 10.97
+S9.2 fees outside the pool: friction 98.0
+S9.2 fees outside the pool, exit of 8%: reference returns 30.5
+S9.2 fees outside the pool, exit of 20%: reference returns 11.0
 S7.5 bin rate 0.5 to within 5 points: n=385
 S7.5 bin rate 0.9 to within 5 points: n=139
 S7.5 AUC 0.75, N=500, prevalence 0.2: 95% half-width 0.059
 S7.5 AUC 0.75, N=2000, prevalence 0.2: 95% half-width 0.029
+S6.3 aged-wallet farm of 100 wallets: 1000 transactions, 0.42 USDC of gas, ready 30 days after its first transaction
+S6.3 aged-wallet farm of 1000 wallets: 10000 transactions, 4.20 USDC of gas, ready 30 days after its first transaction

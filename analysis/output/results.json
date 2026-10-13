@@ -377,6 +377,190 @@
     "6 h": 0.009345794392523364,
     "24 h": 0.004901960784313725
   },
+  "audit": {
+    "bound_breach": {
+      "records": 22,
+      "of": 876,
+      "rate": 0.02511415525114155,
+      "tolerance": 0.5,
+      "below_at_all": 214,
+      "below_by_more_than_0_1": 95,
+      "by_grade": {
+        "A": 0.016877637130801686,
+        "B": 0.023622047244094488,
+        "C": 0.075,
+        "D": 0.047619047619047616,
+        "E": 0.009009009009009009
+      }
+    },
+    "floor_low_is_pessimistic_exit": 1.0,
+    "T_L_equal_friction": 0.997716894977169,
+    "median_holders_by_grade": {
+      "A": 8.0,
+      "B": 14.0,
+      "C": 24.0,
+      "D": 61.5,
+      "E": 181.0
+    },
+    "predictors_of_horizon_recovery": {
+      "floor_low": {
+        "rho": 0.789464094763923,
+        "lo": 0.6981829660931255,
+        "hi": 0.864321787314196,
+        "clusters": 214,
+        "records": 876
+      },
+      "B4_pessimistic_supply_share": {
+        "rho": -0.6958333798943598,
+        "lo": -0.7743106258873708,
+        "hi": -0.6062202337745431,
+        "clusters": 214,
+        "records": 876
+      },
+      "B5_price_multiple_since_first_trade": {
+        "rho": -0.6689311319170286,
+        "lo": -0.7542891928726142,
+        "hi": -0.5690530604695587,
+        "clusters": 214,
+        "records": 876
+      },
+      "pessimistic_take_usdc": {
+        "rho": -0.7178188308834005,
+        "lo": -0.7964637062654607,
+        "hi": -0.6283326013889502,
+        "clusters": 214,
+        "records": 876
+      },
+      "v1_score_1007": {
+        "rho": -0.47979137526263665,
+        "lo": -0.5592325182247913,
+        "hi": -0.39914074687932133,
+        "clusters": 214,
+        "records": 876
+      }
+    },
+    "h4_grade_rank_clustered": {
+      "rho": 0.7051135766787019,
+      "lo": 0.6151711599622725,
+      "hi": 0.7828167171381284,
+      "clusters": 214,
+      "records": 876
+    },
+    "v1_mean_by_grade": {
+      "A": 36.360759493670884,
+      "B": 39.574803149606296,
+      "C": 49.7875,
+      "D": 62.285714285714285,
+      "E": 66.05405405405405
+    },
+    "rated_launches": 240,
+    "rated_creators": 214,
+    "rated_by_launchpad": {
+      "arcora": {
+        "records": 8,
+        "launches": 2
+      },
+      "argus": {
+        "records": 767,
+        "launches": 204
+      },
+      "lift": {
+        "records": 5,
+        "launches": 1
+      },
+      "tolly": {
+        "records": 96,
+        "launches": 33
+      }
+    },
+    "insider_events_launches": 70,
+    "h1_comparators": {
+      "constant_99": {
+        "event_mae": 2.4306032880409556,
+        "horizon_mae": 11.818987142857143
+      },
+      "friction": {
+        "event_mae": 3.352110370592989,
+        "horizon_mae": 9.980045885714288
+      },
+      "lower_bound_exit": {
+        "event_mae": 8.028375089526072,
+        "horizon_mae": 4.894854442857143
+      },
+      "pessimistic_exit": {
+        "event_mae": 12.675398170953363,
+        "horizon_mae": 2.8053431714285706
+      }
+    },
+    "h1_event_measure_median": 98.99246098536054,
+    "h1_min_error": 1.8983711994472117,
+    "h1_median_outflow": 0.7587652314745887,
+    "h1_grade_counts": {
+      "A": 41,
+      "B": 14,
+      "C": 11,
+      "E": 2,
+      "D": 2
+    },
+    "h1_prime_exploratory": {
+      "value": 7.174702714285718,
+      "lo": 3.2260867155654798,
+      "hi": 11.871835822777657,
+      "pessimistic_mae": 2.8053431714285706,
+      "friction_mae": 9.980045885714288
+    },
+    "h4_prime_exploratory": {
+      "value": 0.12053296284689441,
+      "lo": 0.0849088518808609,
+      "hi": 0.16171324337381254
+    }
+  },
+  "method_versions": {
+    "2.0.2": {
+      "records": 876,
+      "rated": 876,
+      "errors": 0,
+      "mean_loss_by_grade": {
+        "A": 0.9115261243248944,
+        "B": 0.49972385984251966,
+        "C": 0.412905375625,
+        "D": 0.5938907070238095,
+        "E": 0.7168925722522523
+      },
+      "n_by_grade": {
+        "A": 474,
+        "B": 127,
+        "C": 80,
+        "D": 84,
+        "E": 111
+      },
+      "monotone": false,
+      "floor_changed_vs_203": 0,
+      "grade_changed_vs_203": 0
+    },
+    "2.1.0": {
+      "records": 876,
+      "rated": 876,
+      "errors": 0,
+      "mean_loss_by_grade": {
+        "A": 0.03451090084388184,
+        "B": 0.11081780314960629,
+        "C": 0.24525757500000003,
+        "D": 0.5132197142857142,
+        "E": 0.6847029549549549
+      },
+      "n_by_grade": {
+        "A": 474,
+        "B": 127,
+        "C": 80,
+        "D": 84,
+        "E": 111
+      },
+      "monotone": true,
+      "floor_changed_vs_203": 5,
+      "grade_changed_vs_203": 0
+    }
+  },
   "committed": {
     "records": 17793,
     "batches": 968,
@@ -391,6 +575,13 @@
     "roots_on_chain": 0,
     "in_deadline": 0,
     "launches": 4122,
-    "backfill_rated_share": 0.018490765171503956
+    "backfill_rated_share": 0.018490765171503956,
+    "unobservable_share": 0.0008430281571404484,
+    "backfill_unobservable_share": 0.1841688654353562,
+    "launchpad_share": {
+      "argus": 0.7857836001940806,
+      "lift": 0.21348859776807375,
+      "o1": 0.000727802037845706
+    }
   }
 }

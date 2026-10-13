@@ -2,17 +2,17 @@
 
 Farbod Ghasemlu · Drydock Org · ORCID [0009-0009-2303-5672](https://orcid.org/0009-0009-2303-5672) · farbodghasemlu@outlook.com
 
-Working paper, version of 12 October 2026.
+Working paper, version of 13 October 2026.
 
-*Working paper. Not peer reviewed. The records analysed in Section 8 were recomputed after their outcomes (retrospective); forecasts committed before their outcomes began on 8 October 2026 and are reported separately.*
+*Working paper. Not peer reviewed. The records analysed in Section 8 were recomputed after their outcomes (retrospective). Forecasts issued live since 8 October 2026 are batched for commitment on Arc, but the commitment contract is not yet deployed, so none counts yet. This version responds to an audit of the version of 12 October (Appendix D).*
 
 ## Abstract
 
 Scores that screen newly launched tokens are widely used and almost never validated. We audit the score DryDock published for Arc launches (v1), an additive 0 to 100 index of weighted factors with hard caps, against its own code, and report twelve findings. The score has no stated estimand, so it cannot be tested. Market-activity factors, which insiders can manufacture, carry 44% of attainable points. Insider holdings are measured against total supply rather than pool depth, so a launch whose insiders hold 20% scores 85 ("Strong setup") although their exit would cut a buyer's position by 89%.
 
-We then specify v2, which replaces points with quantities that carry units. The *structural floor* is what a 100 USDC reference position recovers under the worst single structural event available at a given block (tradability loss, liquidity removal, insider exit), computed by simulating the pool's, hook's and token's own code. Insider holdings form an interval whose pessimistic bound Sybil splitting cannot lower. Records are committed on Arc before outcomes. Calibrated channel probabilities and an expected-loss *Integrity Score* follow only once pre-registered sample-size gates and ship criteria are met.
+We then specify v2, which replaces points with quantities that carry units. The *structural floor* is what a 100 USDC reference position recovers under the worst single structural event available at a given block (tradability loss, liquidity removal, insider exit), computed by simulating the pool's, hook's and token's own code. Insider holdings form an interval whose pessimistic bound Sybil splitting cannot lower. Records are to be committed on Arc before outcomes; at the time of writing the commitment contract is not yet deployed, so no record counts yet. Calibrated channel probabilities and an expected-loss *Integrity Score* follow only once pre-registered sample-size gates and ship criteria are met.
 
-We report the first data: 202,944 launches from Arc's first three weeks, of which a fixed sample of 9,475 traded launches was recomputed at five ages. Most records abstain, because 99% of launches still unrated at 24 hours have fewer than ten holders. The pre-registered test that floor grades order realised 24-hour loss passes, from 3.5% at grade A to 68.5% at grade E. The test that the loss at an insider-exit event matches the simulation fails (mean error 12.7 points against a 10-point criterion, every error on the safe side); measured at the horizon instead, in an exploratory comparison, the floor is within 2.8 points. The gates for calibrated probabilities are not met. The dataset and code are released.
+We report the first data: 202,944 launches from Arc's first three weeks, of which a fixed sample of 9,475 traded launches was recomputed at five ages. Most records abstain; 99% of the launches still too early to rate at 24 hours have fewer than ten holders. Floor grades order realised 24-hour loss, from 3.5% at grade A to 68.5% at grade E, but on today's Arc the floor's lower end is close to a hard bound on price, so the pre-registered test passes almost by construction, and it passed only after a defect found in outcome data was fixed. The floor does order outcomes better than the price multiple since launch (exploratory), and v1's score was anti-correlated with outcomes. The registered test of severity at the event fails because its measure cannot discriminate; measured at the horizon, the floor is within 2.8 points of realised recovery (exploratory). Following an audit, replacement tests are registered before any committed record can be scored. The gates for calibrated probabilities are not met. The dataset and code are released.
 
 **Keywords:** token launches, rug pulls, probabilistic forecasting, calibration, proper scoring rules, strategic classification, Sybil resistance, entity resolution, automated market makers, verifiable computation.
 
@@ -24,7 +24,7 @@ Most new tokens fail, and most fail fast. Xia et al. flagged over 10,000 scam to
 
 Buyers decide in seconds, so a single number does most of the work. That number is usually an additive point score built from heuristics. A survey of 14 rug-pull detection tools found they cover 25 of 34 known root causes and miss wash trading, hidden fees and fake liquidity locks \[8\]. We found no launch-scoring product that publishes calibration against outcomes.
 
-DryDock scores every launch from seven launchpads on Arc \[3\]. Arc is Circle's EVM Layer 1; public mainnet opened on 16 September 2026 with USDC as gas and block times near half a second \[57\]. The chain was less than four weeks old on the date of this paper. Any score for it starts with almost no local outcome history.
+DryDock scores every launch from seven launchpads on Arc \[3\]. Arc is Circle's EVM Layer 1; public mainnet opened on 16 September 2026 with USDC as gas and block times near half a second \[57, 61\]. The chain was less than four weeks old on the date of this paper. Any score for it starts with almost no local outcome history.
 
 ### 1.2 The thesis
 
@@ -45,7 +45,7 @@ This is the standard DryDock's own research applies to launches. The verifiable-
 
 The audit covers v1 twice: as published on DryDock's methodology, risk and launchpad pages on 7 October 2026 \[1, 2, 3\], and as implemented in DryDock's code at the commit that last served it (Appendix C). The first version of this paper, written before the code was examined, inferred the scoring rules from the published text; Section 3 states for every finding whether the code confirms it, contradicts it or confirms it in part, and corrects the arithmetic where the code differs from the text.
 
-The design (Sections 4 to 7) is unchanged from that first version except where Section 7.8 records a deviation. The hypotheses, baselines, metrics, sample-size gates and ship and kill criteria were fixed before any Arc outcome was examined. Section 8 then reports what was built and what the data since mainnet opened can and cannot show: every launch on the seven launchpads DryDock lists, from 16 September to 8 October 2026, recomputed by the production code (the backfill, labelled retrospective throughout), and the forecasts DryDock has committed on Arc since 8 October 2026.
+The design (Sections 4 to 7) is unchanged from that first version except where Section 7.8 records a deviation. The hypotheses, baselines, metrics, sample-size gates and ship and kill criteria were fixed before any Arc outcome was examined. Section 8 then reports what was built and what the data since mainnet opened can and cannot show: every launch on the seven launchpads DryDock lists from 16 September to 7 October 2026, with a fixed sample of 9,475 traded launches recomputed by the production code (the backfill, D11, labelled retrospective throughout), and the forecasts DryDock has committed on Arc since 8 October 2026.
 
 Every number in this paper is produced by a kept script: the illustrative arithmetic by the script in Appendix B, the empirical results by the analysis code released with the dataset (Appendix C). Parameters of v2 that require outcome data are left as symbols or marked as priors. The paper does not claim that v2 predicts better than v1 on Arc. It specifies the experiment that would show whether it does, and reports how far that experiment has run.
 
@@ -55,7 +55,7 @@ Every number in this paper is produced by a kept script: the illustrative arithm
 
 The measurement literature agrees on scale and disagrees on labels. Xia et al. combined a guilt-by-association heuristic with a classifier and put the scam share of Uniswap V2 listings near 50% \[5\]. Mazorra et al. reported accuracy of 0.9936 for predicting malicious tokens before the malicious act \[6\]; their labels call a Uniswap V2 token malicious when it has had no transfer or reserve update for 30 days after losing nearly all of its liquidity or price without recovering, which yielded 26,957 malicious tokens against 631 labelled non-malicious. A figure derived from that work, that 97.7% of Uniswap V2 tokens were rug pulls, was publicly contested, and the lead author said the paper's aim was detection method, not prevalence \[59\].
 
-The lesson for a scoring system is that the outcome definition decides the headline. Naviglio et al. show a large share of new-token liquidity trapped in honeypots \[9\]. Mongardini and Mei studied 34,988 meme coins on four chains and found that 82.8% of tokens returning over 100% showed artificial growth, with extraction following earlier manipulation \[13\]. A score must therefore define its failure event mechanically, so that two parties with the same chain data label the same token the same way.
+The lesson for a scoring system is that the outcome definition decides the headline. Naviglio et al. show a large share of new-token liquidity trapped in honeypots \[9\], contracts that accept purchases and block sales, a class Torres et al. characterised on Ethereum \[18\]. Mongardini and Mei studied 34,988 meme coins on four chains and found that 82.8% of tokens returning over 100% showed artificial growth, with extraction following earlier manipulation \[13\]. A score must therefore define its failure event mechanically, so that two parties with the same chain data label the same token the same way.
 
 ### 2.2 What predicts launch outcomes
 
@@ -248,7 +248,7 @@ The design does not ask users to trust the platform's reported accuracy. It make
 - **Finality.** Arc finalizes blocks deterministically in under a second \[57\]. Scores are computed at a finalized block height, and no reorganisation handling is needed.
 - **Gas in USDC.** Identity creation is nearly free, so any count of addresses is worthless as evidence (F10).
 - **A young chain.** Wallet age on Arc is at most a few weeks. Seniority evidence must come from elsewhere, for example the same address's history on other EVM chains, and must be treated as weak.
-- **Issuer blocklist.** Arc enforces a USDC blocklist \[2\]. A sale can fail for reasons outside the token contract, so tradability is tested by simulation, not inferred from code.
+- **Issuer blocklist.** Arc enforces a USDC blocklist: a USDC transfer from or to a blocklisted address reverts, and a blocklisted sender's transaction is rejected \[62\]. A sale can fail for reasons outside the token contract, so tradability is tested by simulation, not inferred from code.
 - **Planned confidential transfers.** Circle has described opt-in privacy for Arc \[57\]. If transfer amounts become hidden for a token, balance-based features are unobservable and the system must abstain for it.
 
 ## 5. The protocol
@@ -287,9 +287,9 @@ The thresholds 20 points, 50% and 20 USDC are definitional. They fix what is bei
 
 For each channel the system simulates the worst event available at block *h* and then sells the reference position. This is done with state-override calls against the pool at *h*, so fees, hooks, tick liquidity and single-sided ranges are handled by the pool's own code. No dollar threshold is involved (R4).
 
-- **Tradability.** Set every privileged parameter to the worst value the code permits without a timelock longer than *H*. If the code is unverified, upgradeable without delay, or otherwise unbounded, the recovery is taken as zero and flagged "unbounded".
-- **Liquidity.** Remove every liquidity position whose owner can withdraw within *H*. Burned positions and positions in a recognised locker that unlocks after *h + H* stay.
-- **Insider exit.** Sell the full balance of the insider set, once for the lower-bound set and once for the pessimistic set.
+- **Tradability.** Set every privileged parameter to the worst value the code permits without a timelock longer than *H*. If the code is unverified, upgradeable without delay, or otherwise unbounded, the recovery is recorded as zero, the record is flagged "unbounded", and the record's state is unobservable: no floor or grade is published, and the token page shows an explicit warning that the code cannot be checked (Appendix A.2, step 5).
+- **Liquidity.** Remove every liquidity position whose owner can withdraw within *H*, and have each owner sell what the withdrawal returned (from method 2.1.0). Burned positions and positions in a recognised locker that unlocks after *h + H* stay.
+- **Insider exit.** Sell the full balance of the insider set, once for the lower-bound set and once for the pessimistic set. From method 2.1.0 a member first withdraws any liquidity position it can withdraw, so tokens parked in liquidity count toward its exit.
 
 Write the recovery of the reference position after event *k* as ρ with superscript *k*. The **loss given event** and the **structural floor** are
 
@@ -297,7 +297,7 @@ $$
 \ell_k = 1 - \rho_h^{(k)}, \qquad \Phi_h = 100 \cdot \min_{k \in \{T, L, I\}} \rho_h^{(k)}
 $$
 
-The floor reads directly: "in the worst single structural event available now, 100 USDC becomes Φ". Because the insider set is an interval, so is the floor. The baseline cost of entering and leaving with no event, 1 minus ρ, is reported beside it as friction.
+The floor reads directly: "in the worst single structural event available now, 100 USDC becomes Φ". Because the insider set is an interval, so is the floor. The recovery of entering and leaving with no event, ρ with superscript 0, is reported beside it as friction (about 98 per 100 for a pool with a 1% fee; the round-trip cost is one minus it).
 
 The floor answers F6, F8 and F9 at once. It is pool-relative by construction. It needs no liquidity threshold. A punitive or mutable sell fee appears as a low tradability recovery.
 
@@ -315,7 +315,7 @@ Links are created only by value the linked wallet acted on. An unsolicited inbou
 
 *Proof.* A newly created address fails the history test and belongs to the pessimistic set whether or not it is linked. Redistribution conserves the total balance. ∎
 
-The adversary can shrink the pessimistic set only by using addresses with real history, which are scarce and take time to build, or by actually distributing tokens to independent holders. The second is improvement, not gaming (R6).
+The adversary can shrink the pessimistic set only by using addresses with history, or by actually distributing tokens to independent holders. History takes time to build but is not scarce: the margin counts transactions, and on Arc a farm of 1,000 wallets that each send the required ten costs about 4.2 USDC of gas and 30 days of lead time (Section 6.3). The second is improvement, not gaming (R6).
 
 The weakness is stated plainly. On a three-week-old chain most honest buyers also lack history, so the pessimistic bound is wide for almost every launch. The interval is still correct, and the forecasting layer learns from outcomes how much weight each end deserves.
 
@@ -345,17 +345,19 @@ The launchpad intercepts are partially pooled toward a common mean, so a launchp
 
 Monotonicity serves three purposes. Each feature has an interpretable direction. With few outcomes, the constraint is strong regularisation. An adversary cannot find a region where adding risk improves the forecast.
 
-Under independent channel events and multiplicative recoveries, the expected recovery of the reference position is a product. The **Integrity Score** is that expectation on a 0 to 100 scale:
+Under independent channel events and multiplicative recoveries, the expected recovery of the reference position is a product. Friction is paid once, whatever happens, so it is applied once; each channel then contributes the expected loss given its event, net of friction. The **Integrity Score** is that expectation on a 0 to 100 scale:
 
 $$
-\mathrm{IS}_h = 100 \prod_{k \in \{T, L, I\}} \bigl(1 - \pi_k \, \ell_k\bigr)
+\mathrm{IS}_h = 100\, \rho_h^{(0)} \prod_{k \in \{T, L, I\}} \bigl(1 - \pi_k \, \lambda_k\bigr), \qquad \lambda_k = \min\bigl(\hat\lambda_k,\ \tilde\ell_k\bigr), \quad \tilde\ell_k = 1 - \rho_h^{(k)} / \rho_h^{(0)}
 $$
 
-The score has a unit: expected USDC remaining, per 100, after structural events over the horizon. It equals 100 when no event is likely or none would hurt. It falls toward the floor as the worst event becomes certain.
+Here ρ with superscript 0 is the friction recovery, ρ with superscript *k* the simulated recovery after event *k*, and the cap is the simulated worst-case loss net of friction. The loss given event λ_k is estimated from resolved outcomes, as credit risk estimates loss given default: the mean realised loss, net of friction, over resolved records in which event *k* fired, by launchpad and age. Because π_k is the probability of a threshold event (for example, at least half of the pessimistic set's tokens sold), not of the worst case, multiplying it by the worst-case loss would overstate expected loss; λ_k is the loss that actually followed such events. Until a channel has the events of Section 7.5, λ_k is set to that worst case, the conservative choice, and the worst case always caps it. This definition replaces the one first registered, 100 times the product over channels of one minus π_k times a loss that included friction, which counted friction up to three times and paired threshold probabilities with worst-case losses (Section 7.9).
 
-*Proposition 3 (non-compensation).* For every channel *k*, the Integrity Score is at most 100(1 − πₖℓₖ), and it is non-increasing in every π and every ℓ.
+The score has a unit: expected USDC remaining, per 100, after friction and structural events over the horizon. It equals 100 times the friction recovery when no event is likely or none would hurt. It falls toward the floor as the worst event becomes certain and its realised losses approach the worst case.
 
-*Proof.* Each factor of the product lies in \[0, 1\] and is decreasing in its π and ℓ. ∎
+*Proposition 3 (non-compensation).* For every channel *k*, the Integrity Score is at most 100ρ⁽⁰⁾(1 − πₖλₖ), and it is non-increasing in every π and every λ.
+
+*Proof.* The friction recovery lies in \[0, 1\], and each factor of the product lies in \[0, 1\] and is non-increasing in its π and λ. ∎
 
 No feature outside channel *k* can lift the score above the bound that channel sets. Caps are unnecessary, and there are no cliffs (F5, F7). The independence assumption is tested, not trusted: Section 7 checks whether mean realised recovery matches the score in each score bin.
 
@@ -367,7 +369,7 @@ Arc has too little history to estimate probabilities today. The release is there
 2. **Stage 1, calibrated channels.** Once the sample-size gates of Section 7.5 are met, publish each π with a Venn-Abers interval \[31\]. Recalibrate on a trailing window by isotonic regression \[27\] and track coverage with adaptive conformal updates \[32\].
 3. **Stage 2, Integrity Score.** Publish the score as the headline only after it passes the ship criteria of Section 7.6 on out-of-time data.
 
-The system abstains in three cases. "Too early" applies below a minimum token age or a minimum number of independent trading entities. "Unobservable" applies when balances are hidden or code is unbounded. "Low confidence" applies when the probability interval is wider than a set width. An abstention is shown as such, never as a low or middling number (F12).
+The system abstains in three cases. "Too early" applies below a minimum token age or a minimum number of independent trading entities. "Unobservable" applies when balances are hidden or code is unbounded; unbounded code is the one abstention shown as a warning, not a neutral state, so that deploying unverifiable code earns a visible flag rather than silence. "Low confidence" applies when the probability interval is wider than a set width. An abstention is shown as such, never as a low or middling number (F12).
 
 For Stage 0 a letter grade summarises the lower end of the floor: A for 90 or more, B for 75 to 89, C for 50 to 74, D for 20 to 49, E below 20. The bands are presentation only. Each is a statement in USDC, and none is used in any computation.
 
@@ -417,7 +419,7 @@ Of eleven attacks, v2 removes the payoff of eight by construction and leaves thr
 | A5 | Sit just under a threshold | Avoids each cap at 29.9% insiders or 1,001 USDC | No thresholds in any computation | None |
 | A6 | Rent liquidity by buying with own wallets | 25k USDC appears in a locked pool | The buying wallets hold tokens, so insider loss rises | None |
 | A7 | Farm a creator record with one self-pumped launch | 10 points on every later launch | Record is shrunk and weighted by public capital at risk | Small |
-| A8 | Flip a privilege after buyers enter | Unscored | Priced in advance by worst-case simulation | Code outside the analyser's reach is scored as unbounded |
+| A8 | Flip a privilege after buyers enter | Unscored | Priced in advance by worst-case simulation | Code outside the registry gets no floor and an explicit warning that it cannot be checked |
 | A9 | Send dust to link a competitor's buyers | Possible where funding precedes a known wallet's purchase | Links need value the wallet acted on | None |
 | A10 | Mass-launch tiny tokens to bias base rates | Shifts the base-rate panel | Minimum public inflow for inclusion; grouping by creator cluster | Small |
 | A11 | Behave until the horizon passes, then exit | Unscored | Rolling forecasts; unlock dates inside 7 days are priced | Open beyond the longest horizon |
@@ -432,17 +434,17 @@ The cost of A6 under v1 is the round-trip fee on the rented amount. At the 1% fe
 
 Pumping the price is self-defeating under v2. This is the formal content of R2.
 
-*Proposition 5 (routes to a higher floor).* Every action that raises the lower end of the structural floor falls into one of four classes: (a) removing or time-locking a privilege; (b) burning or locking liquidity; (c) burning, locking, selling or genuinely distributing insider tokens; (d) moving insider tokens to addresses that pass the independence test while remaining under common control.
+*Proposition 5 (routes to a higher floor).* Under method 2.1.0, every action that raises the lower end of the structural floor falls into one of four classes: (a) removing or time-locking a privilege; (b) burning or locking liquidity; (c) burning, locking, selling or genuinely distributing insider tokens; (d) moving insider tokens to addresses that pass the independence test while remaining under common control.
 
-*Proof.* The floor is the minimum of three recoveries. The tradability recovery rises only if the worst reachable privileged state improves, which is (a). The liquidity recovery rises only if the withdrawable share falls, which is (b). The insider recovery rises only if the pessimistic set's sellable balance falls relative to pool depth. Depth rises relative to that balance only through liquidity that is not withdrawable, which is (b) again, since withdrawable liquidity lowers the liquidity recovery. The balance falls only by burn, lock, sale or transfer. A transfer leaves the pessimistic set only if the recipient passes the independence test, which is genuine distribution (c) or aged-wallet control (d). ∎
+*Proof.* The floor is the minimum of three recoveries. The tradability recovery rises only if the worst reachable privileged state improves, which is (a). The liquidity recovery rises only if the withdrawable share falls, which is (b). The insider recovery rises only if the pessimistic set's sellable balance falls relative to pool depth. Depth rises relative to that balance only through liquidity that is not withdrawable, which is (b) again, since withdrawable liquidity lowers the liquidity recovery. The balance falls only by burn, lock, sale, transfer, or deposit into a liquidity position. A deposit into a withdrawable position does not lower it: the member withdraws the position before selling (Appendix A.2, step 7), and in the liquidity event its owner sells what it withdraws (step 6). A deposit into a burned or locked position is (b) or (c). A transfer leaves the pessimistic set only if the recipient passes the independence test, which is genuine distribution (c) or aged-wallet control (d). ∎
 
-Classes (a) to (c) reduce what the adversary can extract over the horizon. They are improvement in the sense of \[34\]. Class (d) is the only gaming route, and its cost is the cost of manufacturing address history.
+Up to method 2.0.3 the proof had a gap: tokens parked in a withdrawable position fell out of the insider exit, and the liquidity event sold only the reference position, so parking raised the floor without lowering what could be dumped. Method 2.1.0 closes it. Classes (a) to (c) reduce what the adversary can extract over the horizon. They are improvement in the sense of \[34\]. Class (d) is the only gaming route, and its cost is the cost of manufacturing address history.
 
 ### 6.3 Residual risks
 
-**Aged wallets (A3, class d).** An organised farm can prepare addresses with months of plausible activity. Three countermeasures raise its cost without closing it: the history margin lengthens as Arc matures; co-trading recurrence across launches links wallets that repeatedly appear together; and proceeds that converge on one address link sellers after the fact, which feeds the creator cluster's record for the next launch. The lower and upper bounds are both model inputs, so if aged-wallet attacks become common the fitted weight shifts toward features they cannot move.
+**Aged wallets (A3, class d).** An organised farm can prepare addresses with months of plausible activity, and on Arc it is cheap. Proposition 2 rests on the history margin alone, because the other two independence conditions are easy to meet: a first purchase after the launch window means buying after 20 blocks, about ten seconds, and the funding condition passes if a direct funder is a hub or if there is no direct funder inside the 12-hour lookback, so funding through a bridge or a day early is enough. The margin itself is a transaction count: at least one transaction 30 days before the token's creation and ten before it. At the gas price observed on 13 October 2026, a farm of 1,000 such wallets needs 10,000 transactions, about 4.2 USDC of gas, and 30 days (Appendix B, S6.3). The regime of Section 8 also ends on its own: from about 16 October 2026, every wallet that transacted in mainnet's first days passes the margin, honest or farmed, so the pessimistic set will stop holding nearly every holder for reasons unrelated to safety, and results on committed records are reported separately before and after that date (Section 7.9). A contract account's transaction count rises only when it creates contracts, so smart-contract wallets will rarely pass the margin; how common they are among Arc buyers has not been measured. Three countermeasures raise its cost without closing it: the history margin lengthens as Arc matures; co-trading recurrence across launches links wallets that repeatedly appear together; and proceeds that converge on one address link sellers after the fact, which feeds the creator cluster's record for the next launch. The lower and upper bounds are both model inputs, so if aged-wallet attacks become common the fitted weight shifts toward features they cannot move.
 
-**Opaque code (A8).** Worst-case simulation is only as good as the analysis of what privileged calls can do. Template launchpads make this tractable because hooks and tokens come from a small set of known contracts. Anything else is scored as unbounded, which is conservative and will be wrong for some honest custom tokens.
+**Opaque code (A8).** Worst-case simulation is only as good as the analysis of what privileged calls can do. Template launchpads make this tractable because hooks and tokens come from a small set of known contracts. Anything else gets no floor and an explicit warning that its code cannot be checked, which is conservative and will be wrong for some honest custom tokens. A side effect of the current registry: every registered template has no swap-affecting privilege and every unregistered one abstains, so the tradability channel cannot fire on a rated launch until a template with privileges is registered.
 
 **Long cons (A11).** A creator who waits past the longest horizon is outside any forecast the system issues. The score is about a stated window, and the page must say so.
 
@@ -528,17 +530,28 @@ Sections 7.1 to 7.7 are unchanged from the first version of this paper, written 
 - **D1. Retrospective data.** Section 7 assumes forecasts committed before their outcomes. DryDock began committing on 8 October 2026, so the records behind H1 and H4 in Section 8 were recomputed after the fact for launches since 16 September 2026 (the backfill). They were produced by the same code and parameters as committed records, but their outcomes were already on chain when they were computed. They are labelled retrospective everywhere and reported separately from committed records; the pre-registered tests on committed data remain pending.
 - **D2. Funding lookback.** Appendix A.1 set 7 days. Public Arc nodes that accept wide log ranges keep about 42 hours of history, and the archive nodes accept 100- to 10,000-block ranges at low rates, so a 7-day, three-hop trace cannot be computed at forecast time and records would not be reproducible from public infrastructure. The lookback is 86,400 blocks (about 12 hours), every edge of a path inside one window ending at the wallet's first purchase.
 - **D3. Minimum age.** Appendix A.1 set 120 blocks, glossed as about a minute. Arc produces about 1.97 blocks a second, so every record at the 1-minute landmark was two or three blocks short and could never be rated. The minimum age is 60 seconds of block time.
-- **D4. Large insider sets.** Appendix A.2 sells every insider address in turn. Beyond 100 addresses the rest of the set is sold as one block, credited to one seller through a storage override, to stay inside the 50 million gas that public nodes allow per call. In a constant-product pool with retained fees this returns slightly more to the reference position than address-by-address sales would (Appendix B); in Uniswap V3 and V4, where fees sit outside active liquidity, the two are equal up to rounding.
+- **D4. Large insider sets.** Appendix A.2 sells every insider address in turn. Beyond 100 addresses the rest of the set is sold as one block, credited to one seller through a storage override, to stay inside the 50 million gas that public nodes allow per call. In a constant-product pool with retained fees this returns slightly less to the reference position than address-by-address sales would (Appendix B: 10.93 against 10.97 and 30.33 against 30.36), so the approximation errs on the conservative side; in Uniswap V3 and V4, where fees sit outside active liquidity, the two are equal up to rounding.
 - **D5. "Value the linked wallet acted on."** Section 5.3 states the principle; the implementation needs a rule. A transfer links two wallets only if it carried at least half of what the recipient then spent on its first purchase or forwarded along the path (Appendix A.3).
 - **D6. Address history.** Section 5.3 allows history "on Arc or on another EVM chain". Appendix A.1, which governs, does not; the implementation reads Arc transaction counts only. History on other chains would need archive access to each of them.
 - **D7. Population.** Section 7.2 names six launchpads, including Minara. DryDock lists only launchpads whose tokens its swap router can trade; by 8 October 2026 that was lift.fun, Tolly, ArcPad, Argus, Arcora, o1 Launchpad and Sashimi, while Minara's pools pair with native USDC and are not routable. The population is every launch on those seven since 16 September 2026, identified by the launchpad's own contract logs in the creating transaction.
 - **D8. Committed means committed in time.** Section 10.2 does not say how late a commitment may be. A record counts as committed only if its root was posted within 1,200 blocks of its forecast block (Appendix A.1). The committer account was not funded when the runner started, so the first batches are posted late and fall outside the scoreboard.
 - **D9. v1 baselines without wallet records.** B1 and B2 use v1 as it scored before wallet records loaded, without the smart-money factor: that factor needed 24 hours of every holder's trades across all launches and is not reconstructed for past blocks.
 - **D10. Secondary horizons.** Records and resolutions use the 24-hour horizon only. The 1-hour and 7-day horizons are not yet computed.
-- **D11. A sample, not the population, for the backfill.** Section 7.2 takes every launch. Insider sets and resolutions need each token's transfers until 48 hours after its first trade, and public nodes filter logs only by address, so reconstructing them for all 78,244 traded launches meant downloading every Transfer log on Arc since mainnet opened (estimated at more than eight hours for the transfer scan alone over the bandwidth available). The backfill therefore uses a fixed sample: every traded launch of each launchpad with at most 3,000 of them, and 3,000 drawn uniformly from each larger launchpad (Argus and lift.fun) by a seeded hash of the token address (`backfillSample` in the released code). The sample was fixed before any record was computed. Results are reported per launchpad, where the sample is uniform; pooled figures weight the smaller launchpads more heavily than the population does, and are labelled as sample figures.
+- **D11. A sample, not the population, for the backfill.** Section 7.2 takes every launch. Insider sets and resolutions need each token's transfers until 48 hours after its first trade, and public nodes filter logs only by address, so reconstructing them for all 78,223 traded launches meant downloading every Transfer log on Arc since mainnet opened (estimated at more than eight hours for the transfer scan alone over the bandwidth available). The backfill therefore uses a fixed sample: every traded launch of each launchpad with at most 3,000 of them, and 3,000 drawn uniformly from each larger launchpad (Argus and lift.fun) by a seeded hash of the token address (`backfillSample` in the released code). The sample was fixed before any record was computed. Results are reported per launchpad, where the sample is uniform; pooled figures weight the smaller launchpads more heavily than the population does, and are labelled as sample figures.
 - **D12. Funding stops at contracts.** Section 5.3 ends funding paths at registered hubs only. On Arc, swap routers and pools that are not in the registry (most have no public identification, which the registry requires) receive hundreds of thousands of USDC transfers a day; following their inflows linked a buyer to every other user of the same router and made a single record cost millions of log reads. From method 2.0.2 a path is traced only into accounts without contract code. Wallets funded through one personal contract still share it as an ancestor, and a contract funder fails the history test, so the pessimistic set is unaffected; the lower bound loses the links that ran through contracts.
 - **D13. Valuing a held position.** Appendix A.5 as first implemented sold the reference position's tokens, credited by a storage override, into the pool as it stood at the later block. That pool never received the position's own purchase, so on thin launches the sale found almost no USDC (on Argus V5 the hook rejected the partial fill) and the resolution recorded a near-total loss that had not happened. The first run of the backfill used that rule; it was found by checking grade-A records whose launches had no trades after *h*, which resolved at 0 while their floor was 96. From method 2.0.3 the position is bought at the later block by exact output and sold straight back, and Uniswap V4 tradability reads the pool's positions at the horizon (it had read none). Every record in Section 8 was recomputed under 2.0.3.
 - **D14. Only rated records are resolved.** Appendix A.5 resolves every record. Records that abstain carry no floor and no grade, so their outcomes enter no hypothesis, and resolving them costs as many chain reads as resolving a rated one; with 98% of records abstaining, the live resolver could not keep up. Both the backfill and, from 12 October 2026, the live runner resolve rated records only; abstaining records are closed without an outcome. The gate counts of Section 8.4 count rated resolutions only.
+- **D15. Amendments after an audit.** An audit of the version of 12 October found that H1 as registered cannot discriminate and that H4 tests a bound; Section 7.9 registers replacement tests (H1′, H4′), creator clustering, launch-level gate counts, a split by history regime, a redefined Integrity Score and method 2.1.0, before any committed record could be scored. Appendix D lists every finding and change.
+
+### 7.9 Amendments registered before the committed data
+
+Sections 7.1 to 7.7 first appear in a public commit as `2c845fd` of the paper's repository (8 October 2026, 02:12 UTC), two days before the first outcome data were computed; commit times are set by the author's machine and are not independent evidence. They are unchanged here, except that one cross-reference in Section 7.2 follows the later renumbering of Section 9 to Section 10. An audit of the working paper of 12 October found that two of the tests, as registered, could not discriminate (Section 8.4). The amendments below are registered on 13 October 2026, when no record had yet been committed in time (Section 8.6), so no confirmatory data existed. They apply to committed records; on the retrospective records of Section 8 the original tests stand as reported, and the amended measures are exploratory.
+
+1. **H1′ replaces H1's measure.** For each rated record whose event *k* fires before its horizon, compare the simulated recovery after event *k* (the pessimistic set for insider exit) with the realised recovery at the horizon. H1′ passes for channel *k* when the mean absolute difference is within 10 points and is smaller than that of the friction-only prediction on the same records, with a creator-clustered bootstrap interval for the difference that excludes zero. The original event measure is reported beside it.
+2. **H4′ is a test the floor can fail.** H4 stands, reported with the rate at which realised recovery falls below the floor's lower end in each grade. H4′ passes when the floor's lower end orders realised recovery better than baseline B5, defined here: the price multiple since the first trade (the pool price at the forecast block over its price after the first swap), which asks whether the floor adds anything to how far the price has run. It is measured by the difference in Spearman correlations with a creator-clustered bootstrap interval that excludes zero. B4 is reported on the same records.
+3. **Clustering and counting.** Every test uses a bootstrap that resamples creators, as Section 7.4 requires; the sample-size gates count launches with an event, not records.
+4. **History regime.** From about 16 October 2026 every wallet active in mainnet's first days passes the history margin (Section 6.3). Results on committed records are reported separately for records issued before and after 16 October 2026 00:00 UTC, and by whether the pessimistic set holds every holder.
+5. **Definitions.** The Integrity Score is the expected recovery of Section 5.5 as amended (friction applied once; loss given event estimated from outcomes and capped by the simulated worst case). The facts layer is method 2.1.0 from its deployment (tokens parked in withdrawable liquidity count, Proposition 5).
 
 ## 8. Implementation and retrospective results
 
@@ -582,21 +595,21 @@ Most records abstain. At each landmark 1,745 are unobservable: the o1 Launchpad,
 
 Section 5.3 warned that the pessimistic set would be wide on a young chain. It is wider than wide. The history margin asks for activity 30 days before the token's creation, and every launch in the population was created within 22 days of mainnet opening. Across records, the share of holders that pass the history margin has a median of 0% and a mean of 0.9%. In 63.2% of records the pessimistic set holds every holder, and the median share of holders in it is 100%. The lower-bound set, which needs positive evidence, is much smaller: in the worked example of Section 9.1 it is empty while the pessimistic set holds 65 of 75 holders.
 
-The consequence is that, for now, the lower end of the floor mostly answers the question "what if everyone who holds sold?" That question is the right worst case when no holder can show independence, and the data below show it predicts outcomes well, but the interval will narrow only as the chain ages and holders accumulate history.
+The consequence is that, for now, the lower end of the floor mostly answers the question "what if everyone who holds sold?" That question is the right worst case when no holder can show independence, but it is close to a bound on how far the price can fall, which limits what the test of Section 8.4 can show. The interval will narrow as holders accumulate history; from about 16 October 2026 every wallet active in mainnet's first days passes the margin (Section 6.3).
 
 ### 8.4 Pre-registered tests
 
-**H1 (the facts layer measures severity): fails for insider exit; untestable for the other channels.** Among rated records, 70 launches saw an insider exit after a forecast. At their last prior forecast, the mean absolute difference between the realised recovery at the event and the recovery the pessimistic insider exit predicted is 12.7 points, above the 10-point criterion; the median is 4.4. Every error has the same sign: realised recovery was higher than predicted, so the floor erred on the safe side. No tradability or liquidity event occurred in the sample, so H1 cannot be tested for those channels.
+The rated records come from 240 launches by 214 creators, and almost all from two launchpads: Argus (204 launches) and Tolly (33), with two Arcora launches and one lift.fun launch. The results below describe those launchpads. Every interval is a 95% interval from a bootstrap that resamples creators, as Section 7.4 requires.
 
-**H4 (grades order realised loss): passes.** Over 876 resolved rated records, the mean loss of the reference position after 24 hours rises from 3.5% at grade A to 68.5% at grade E, monotonically (Table 10, Figure 4); a Jonckheere–Terpstra test for an ordered trend gives z = 23.8. The ordering holds at the 10-minute, 1-hour, 6-hour and 24-hour landmarks taken separately; at 1 minute (58 records) grades D and E swap.
+**H4 (grades order realised loss): passes, but the test is weak.** Over 876 resolved rated records, the mean loss of the reference position after 24 hours rises from 3.5% at grade A to 68.5% at grade E, monotonically (Table 10, Figure 4), and the ordering holds at the 10-minute, 1-hour, 6-hour and 24-hour landmarks taken separately (at 1 minute, 58 records, grades D and E swap). The Spearman correlation between grade rank and loss is 0.71 (0.62 to 0.78). This pass came only after a defect found in outcome data was fixed (D13): under method 2.0.2, the same records order 91.2%, 50.0%, 41.3%, 59.4% and 71.7% from A to E, and H4 fails (Appendix D). The retrospective pass is therefore not confirmatory; the committed record is the confirmatory test.
 
-| Grade | Records | Mean loss after 24 h | Severe loss (≤ 20 USDC) |
-| --- | --- | --- | --- |
-| A | 474 | 3.5% | 0.0% |
-| B | 127 | 11.1% | 0.0% |
-| C | 80 | 24.5% | 0.0% |
-| D | 84 | 51.3% | 0.0% |
-| E | 111 | 68.5% | 63.1% |
+| Grade | Records | Mean loss after 24 h | Severe loss (≤ 20 USDC) | Below the floor by more than 0.5 |
+| --- | --- | --- | --- | --- |
+| A | 474 | 3.5% | 0.0% | 1.7% |
+| B | 127 | 11.1% | 0.0% | 2.4% |
+| C | 80 | 24.5% | 0.0% | 7.5% |
+| D | 84 | 51.3% | 0.0% | 4.8% |
+| E | 111 | 68.5% | 63.1% | 0.9% |
 
 *Table 10. Realised loss by grade, rated retrospective records, all landmarks.*
 
@@ -604,21 +617,61 @@ The consequence is that, for now, the lower end of the floor mostly answers the 
 
 *Figure 4: Mean realised loss after 24 hours by grade (H4).*
 
-**Sample-size gates (Section 7.5): not met.** The backfill holds 876 resolved records (the gate is 2,000), launched by 214 distinct creators (an upper bound on creator clusters; the gate is 500), with 127 insider-exit events and no tradability or liquidity events (the gate is 100 per channel). No channel model was fitted. H2, H3 and H6 need one and are not tested; H5 also needs 30 days of wallet history, which no wallet can have before 15 November 2026.
+The pass says less than it seems, because on Arc today the floor's lower end is close to a hard lower bound on price. In every rated record it equals the pessimistic insider exit, and the tradability and liquidity recoveries equal friction in 99.8% of them, so the floor is a one-channel quantity. The pessimistic set holds every holder in 63% of records (Section 8.3), and Argus, Tolly and lift.fun launch with single-sided liquidity and no USDC (F8), so if every holder sells, the pool returns to roughly its launch state. The lower end therefore measures how far the price has run up since launch: the median grade-A record has 8 holders, the median grade-E record 181. A bound orders outcomes almost by construction. Realised recovery ended more than half a point below the floor's lower end in 22 of 876 records (2.5%); it ended below it at all in 214, but in 119 of those by less than 0.1 point, which is the bound being reached rather than broken. For the same reason the 0.0% severe-loss rate of grades A to D is mechanical: severe loss means 20 USDC or less, and those grades' floors lie above 20.
+
+Simple proxies come close (Table 11). The USDC the pessimistic set could pull out (the raw insider take) has a Spearman correlation of −0.72 with realised recovery, the pessimistic set's share of supply (B4) −0.70, and the price multiple since the first trade (B5, Section 7.9) −0.67, against 0.79 for the floor's lower end. The floor's margin over B5, the amended test H4′, is 0.12 (0.08 to 0.16) as an exploratory result. What H4 shows is real but narrower than "grades forecast loss": the simulator gets pool arithmetic right, and launches that have run up tend to give the run-up back.
+
+| Predictor of recovery after 24 hours | Spearman correlation (95% interval) |
+| --- | --- |
+| Floor's lower end | 0.79 (0.70 to 0.86) |
+| USDC the pessimistic set could take | −0.72 (−0.80 to −0.63) |
+| Pessimistic set's share of supply (B4) | −0.70 (−0.77 to −0.61) |
+| Price multiple since the first trade (B5) | −0.67 (−0.75 to −0.57) |
+| v1 score, 7 October rule | −0.48 (−0.56 to −0.40) |
+
+*Table 11. Each predictor against realised recovery, 876 rated records; intervals resample 214 creators.*
+
+**v1 was worse than uninformative.** Its mean score (7 October rule) is 36 in grade A and 66 in grade E (Table 11 gives its correlation): the higher v1 scored a launch, the more a buyer lost. That is the clearest empirical support for findings F3 to F5, whose activity factors rewarded exactly the run-ups that were then given back.
+
+**H1 (the facts layer measures severity): fails, because the registered measure cannot discriminate.** Among rated records, 70 launches saw an insider exit after a forecast. At their last prior forecast, the mean absolute difference between the realised recovery at the event and the pessimistic insider-exit recovery is 12.7 points, above the 10-point criterion. The failure is a mis-specified measure, not a near miss. Appendix A.5, step 5, measures recovery only across the block in which the exit crosses half the set's balance; that ratio has a median of 99.0 in these launches, so the test compares roughly 99 with a full-exit simulation, and every error is positive by construction (the smallest is +1.9). Predictors that ignore insiders would pass it (Table 12): a constant 99 scores 2.4 and friction alone 3.4, while the pessimistic exit, the one quantity that takes insiders seriously, fails. No tradability or liquidity event occurred, so H1 cannot be tested for those channels.
+
+| Prediction of recovery | At the event block (registered measure) | At the horizon |
+| --- | --- | --- |
+| Constant 99 | 2.4 | 11.8 |
+| Friction alone | 3.4 | 10.0 |
+| Lower-bound insider exit | 8.0 | 4.9 |
+| Pessimistic insider exit | 12.7 | 2.8 |
+
+*Table 12. Mean absolute error of each prediction for the 70 launches with an insider exit, USDC per 100.*
+
+Measured at the horizon instead, the amended test H1′ (Section 7.9), the pessimistic exit is within 2.8 points of realised recovery and beats friction alone by 7.2 points (3.2 to 11.9), as an exploratory result. Two cautions apply. The comparison conditions on exits that happened (the median pessimistic set sold 76% of its tokens), and 41 of the 70 launches are grade A, where floor and friction nearly coincide. And because the insider-exit event is resolved against the pessimistic set, which today is nearly every holder, an insider exit on Arc is usually just "holders sold half": the ordinary loss of interest that Section 5.1 keeps out of the score.
+
+**Sample-size gates (Section 7.5): not met.** The backfill holds 876 resolved records (the gate is 2,000) from 240 launches by 214 creators (an upper bound on creator clusters; the gate is 500), and 70 launches with an insider-exit event (127 records; the gate, counted in launches, is 100 per channel), with no tradability or liquidity event. No channel model was fitted. H2, H3 and H6 need one and are not tested; H5 also needs a skill label, which takes 30 days of wallet history to assign and a further 30 days to confirm out of sample (Section 5.8), so its first test cannot come before 15 November 2026, 60 days after mainnet opened.
 
 **Baselines, descriptive only.** Fitting nothing, the comparisons of Section 7.3 can still be run on the insider channel to show the data's shape, but they support no claim. On an out-of-time split with a one-horizon embargo and unseen creators (286 test records, 17 insider exits), B0's Brier score is 0.059 and v1 recalibrated by isotonic regression (B1) scores 0.075, with an AUC of 0.58. The floor's lower end, which is a severity, not a probability, has an AUC of 0.46 for whether an exit occurs. Severity and likelihood are different things, which is the separation Section 5 rests on.
+
+**Grades by launchpad.** Among rated records grade A is the most common on Argus (438 of 767, 57%) and Tolly (33 of 96, 34%); Arcora's eight records are mostly E and lift.fun's five are A to C (Table 13). No launchpad has more than 80% of its rated records in one grade.
+
+| Launchpad | A | B | C | D | E |
+| --- | --- | --- | --- | --- | --- |
+| Argus | 438 | 102 | 54 | 68 | 105 |
+| Tolly | 33 | 22 | 24 | 16 | 1 |
+| Arcora | 1 | 1 | 1 | 0 | 5 |
+| lift.fun | 2 | 2 | 1 | 0 | 0 |
+
+*Table 13. Rated records by grade and launchpad, all landmarks.*
 
 ### 8.5 Exploratory analyses
 
 These were not pre-registered and are reported as exploratory.
 
-*H1 measured at the horizon.* The pre-registered event measure compares the position's value just before and at the block in which the event crosses its threshold. When insiders sell gradually, that block carries only the last part of the exit: in the worked example the firing block costs the position 3% while the whole exit costs it 61%. Comparing instead the pessimistic insider-exit recovery at the last prior forecast with the recovery at the horizon, for the same 70 launches, the mean absolute difference is 2.8 points (median 0.25); in 16% of them the horizon value is below the pessimistic floor. The simulated floor predicted where the position ended. The pre-registered criterion is not replaced by this result; it is the evidence that the event measure of Appendix A.5, step 5, should be revised in a later version, with the revision registered before it is tested.
+*H4 net of trading costs.* The floor and the realised loss both include the round-trip cost of the reference position. Measuring the horizon recovery against each record's own friction removes that shared part; the ordering survives (0.5%, 6.0%, 20.7%, 49.2% and 67.5% from A to E, with mean friction between 94 and 97 per 100 in every grade). It does not remove the bound discussed in Section 8.4.
 
-*H4 net of trading costs.* The floor and the realised loss both include the round-trip cost of the reference position, so part of the ordering could be mechanical. Measuring the horizon recovery against each record's own friction removes it. The ordering survives: 0.5%, 6.0%, 20.7%, 49.2% and 67.5% from A to E, while mean friction is between 94 and 97 per 100 in every grade.
+*Method 2.1.0 on the same records.* Counting tokens parked in withdrawable liquidity (Proposition 5) changes the floor of 5 of the 876 rated records and the grade of none; the losses by grade are unchanged (Appendix D).
 
 ### 8.6 The committed record
 
-From its first production record on 8 October 2026 (block 24,825,515) to the dataset's download on 12 October (block 25,607,224), DryDock issued 17,793 records for 4,122 launches and grouped them into 968 batches. Their mix matches the backfill's: 1.6% rated (the backfill: 1.8%), 98.4% too early, 15 unobservable.
+From its first production record on 8 October 2026 (block 24,825,515) to the dataset's download on 12 October (block 25,607,224), DryDock issued 17,793 records for 4,122 launches and grouped them into 968 batches. Their rated share is close to the backfill's (1.6% against 1.8%), and 98.4% are too early. Their unobservable share is not: 15 records, 0.08%, against 18% in the sample, because the sample takes every o1 Launchpad and ArcPad launch while launches since 8 October are almost all Argus (79%) and lift.fun (21%).
 
 None of them counts yet. The committer account that posts roots to the ForecastLedger has not been funded with the USDC Arc charges for gas, so the ledger is not deployed and no root is on chain. Under the rule that a record counts only if its root lands within 1,200 blocks of its forecast block (Appendix A.1, D8), every record issued so far will stay outside the scoreboard even after funding; the batches will still be posted, in order, so that they remain checkable. The pre-registered tests on committed data therefore start from the first record issued after the ledger is live, and the scoreboard is empty until then.
 
@@ -652,7 +705,7 @@ The example also shows the weakness of the pre-registered event measure (Section
 
 ### 9.2 An illustrative launch
 
-One hypothetical launch scores 76 to 83 under v1 and has a structural floor of 11 to 30 USDC per 100 under v2. The launch is constructed for illustration; it is not a real token.
+One hypothetical launch scores 85 to 92 under v1's 1 October rule (86 to 93 under its 7 October rule) and has a structural floor of 11 to 30 USDC per 100 under v2. The launch is constructed for illustration; it is not a real token.
 
 - The pool behaves as a constant-product pool with 25,000 USDC and 10% of token supply, at a 1% fee per swap.
 - Liquidity is locked by the launchpad. The token and hook have no privileged roles, and the fee is immutable.
@@ -664,8 +717,8 @@ One hypothetical launch scores 76 to 83 under v1 and has a structural floor of 1
 
 | Quantity | v1 | v2 |
 | --- | --- | --- |
-| Headline if 8% insiders are detected | 82.9, "Strong setup" | See below |
-| Headline if 20% insiders are detected | 76.3, "Strong setup" | See below |
+| Headline if 8% insiders are detected | 92 (1 October rule), 93 (7 October), "Strong setup" | See below |
+| Headline if 20% insiders are detected | 85 (1 October rule), 86 (7 October), "Strong setup" | See below |
 | Friction: 100 USDC in and out, no event | Not reported | Returns 98.0 |
 | Loss given tradability event | Not reported | 2.0% (friction only) |
 | Loss given liquidity event | Not reported | 2.0% (friction only) |
@@ -673,19 +726,19 @@ One hypothetical launch scores 76 to 83 under v1 and has a structural floor of 1
 | Loss given insider exit, pessimistic set | Not reported | 89.1%; insiders take 16,699 USDC, 67% of the pool's USDC |
 | Structural floor | Not reported | 10.9 to 30.3 USDC per 100; grade E |
 
-The v1 figures assume linear interpolation between the published endpoints. The v2 figures follow from the pool arithmetic alone and are reproduced in Appendix B.
+The v1 figures are v1's own scoring rule applied to this launch (F5; Appendix B). The v2 figures follow from the pool arithmetic alone and are reproduced in Appendix B.
 
 **Reading the result.**
 
 The two systems are not contradicting each other on a prediction. v1 makes none. What v2 adds at Stage 0 is a fact the v1 number hides: a group that may be one party can remove most of a buyer's money in one block, and the pool's lock does not prevent it.
 
-Whether that group will exit is a separate question, and only outcome data can answer it. Suppose the tradability and liquidity probabilities are near zero and the insider-exit probability over 24 hours is π. The Integrity Score is then 100(1 − πℓ), which gives the values below. The π values are assumptions chosen to show the arithmetic.
+Whether that group will exit is a separate question, and only outcome data can answer it. Suppose the tradability and liquidity probabilities are near zero and the insider-exit probability over 24 hours is π. The Integrity Score (Section 5.5) is then 100 times the friction recovery times one minus π times the loss given an exit, here the simulated worst case net of friction, since no outcomes are yet available; that gives the values below. The π values are assumptions chosen to show the arithmetic.
 
 | Assumed π for insider exit | Score with lower-bound loss | Score with pessimistic loss |
 | --- | --- | --- |
-| 0.10 | 93 | 91 |
-| 0.30 | 79 | 73 |
-| 0.60 | 58 | 47 |
+| 0.10 | 91 | 89 |
+| 0.30 | 78 | 72 |
+| 0.60 | 57 | 46 |
 
 If Arc data show that insiders in this position rarely exit within a day, the calibrated score will be high and v1's optimism about such launches will have been justified. If they usually exit, it will be low. Either way the number will rest on counted outcomes.
 
@@ -711,7 +764,9 @@ Resolution at the end of the horizon is a deterministic function of chain state.
 
 A commitment shows that a forecast was made when claimed. It does not show that the forecast was computed correctly. Section 10.1 covers that.
 
-In DryDock's implementation the roots go to a ForecastLedger contract on Arc (Appendix A.4), one transaction every 600 blocks. A record counts as committed only if its root landed within 1,200 blocks of its forecast block; a record posted later is published and resolved like any other but is left out of the scoreboard. The records themselves, their leaves and their resolutions are published by batch, so anyone can recompute every leaf, check every root against the contract, and recompute the scoreboard.
+In DryDock's implementation the roots are to go to a ForecastLedger contract on Arc (Appendix A.4), one transaction every 600 blocks. At the time of writing the contract is not deployed and no root is on chain (Section 8.6); the address in Appendix A.4 is precomputed. A record counts as committed only if its root landed within 1,200 blocks of its forecast block; a record posted later is published and resolved like any other but is left out of the scoreboard. The records themselves, their leaves and their resolutions are published by batch, so anyone can recompute every leaf, check every root against the contract, and recompute the scoreboard.
+
+A commitment proves timing. It does not by itself prove completeness or uniqueness, so three rules make those checkable too. *Completeness:* every launch on a listed launchpad receives a record at each landmark it reaches; a verifier enumerates launches from chain state (the launchpads' own contract logs, Appendix C) and checks that every token and landmark has a record, and because the ledger accepts batches only in strict sequence a withheld batch shows as a gap. *Uniqueness:* a token and landmark have exactly one record; the implementation refuses a second, and if two ever appeared in committed batches only the earlier would count. *Versions:* every record carries the model version that produced it, and the scoreboard reports each version separately over its own committed records only, so a shadow version cannot be chosen after its outcomes are seen; a version counts from the first batch that carries it.
 
 ### 10.3 Versioning
 
@@ -727,7 +782,7 @@ A public label on a wallet is a statement about a person who cannot reply. The r
 
 ## 11. Limitations and non-goals
 
-**Validation is partial and retrospective.** Section 8 tests the two hypotheses that need no fitted model (H1 and H4) on records recomputed after their outcomes (D1). That v2's probabilities forecast better than v1 remains a hypothesis until a channel model is fitted, which the sample-size gates of Section 7.5 govern; Section 8.4 reports the counts. The committed record began on 8 October 2026.
+**Validation is partial, retrospective and weak.** Section 8 tests the two hypotheses that need no fitted model (H1 and H4) on records recomputed after their outcomes (D1). H4 passes, but on today's Arc the floor is close to a bound on price, so the pass is nearly guaranteed, and it came after an outcome-informed fix (D13); H1 fails because its registered measure cannot discriminate. The replacement tests of Section 7.9 apply to committed records, of which none can yet be scored. That v2's probabilities forecast better than v1 remains a hypothesis until a channel model is fitted, which the sample-size gates of Section 7.5 govern; Section 8.4 reports the counts.
 
 **The audit was checked against the code afterwards.** The first version read only the page. Section 3.3 marks each finding against the v1 source; one conclusion (F1) was wrong and one number (F5) was understated.
 
@@ -743,7 +798,7 @@ A public label on a wallet is a statement about a person who cannot reply. The r
 
 **Independence is assumed in the score formula.** Insider exits and liquidity withdrawals may be correlated. The decile check in Section 7.6 detects the resulting error but does not repair it. A joint model is future work.
 
-**Code analysis is incomplete.** No analyser decides what arbitrary contract code can do. Unknown is scored as unbounded, which penalises honest custom contracts.
+**Code analysis is incomplete.** No analyser decides what arbitrary contract code can do. Unknown code gets no floor and a warning that it cannot be checked, which penalises honest custom contracts.
 
 **Forecasts are bounded by their horizon.** Nothing here speaks to day eight.
 
@@ -757,7 +812,7 @@ We put eight objections to the paper that a hostile referee would raise. Two of 
 
 **Objection 1. The audit attacks a summary page, not the system.** Accepted and resolved: Section 3.3 checks every finding against the v1 source code. Ten of twelve hold; F1's conclusion was wrong because the code normalised the score, and F11 used a slightly different rule than the page described. The page is still what users were told, so its inaccuracies are findings in their own right.
 
-**Objection 2. The floor will grade nearly everything E.** Accepted as a real risk, and the design is changed. If more than 80% of launches on a launchpad share one Stage 0 grade, the letter is replaced on that launchpad by the floor interval and its percentile rank among launches of the same age. The grade distribution is reported monthly. In the first data the risk did not materialise: among rated records, grade A is the most common on Argus (57%) and Tolly (34%), and no launchpad has more than 80% of its rated records in one grade (Section 8.2; Arcora's eight rated records are too few to judge).
+**Objection 2. The floor will grade nearly everything E.** Accepted as a real risk, and the design is changed. If more than 80% of launches on a launchpad share one Stage 0 grade, the letter is replaced on that launchpad by the floor interval and its percentile rank among launches of the same age. The grade distribution is reported monthly. In the first data the risk did not materialise: among rated records, grade A is the most common on Argus (57%) and Tolly (34%), and no launchpad has more than 80% of its rated records in one grade (Table 13; Arcora's eight rated records are too few to judge).
 
 **Objection 3. Dropping demand and momentum discards the best predictors.** Speed of accumulation is the strongest predictor of graduation on Pump.fun \[10\]. Graduation is a different estimand from structural failure. Those variables remain visible in the market panel, H6 measures what the score loses, and the paper accepts that loss in exchange for Proposition 4. A product that forecasts upside is a legitimate separate product with a different threat model.
 
@@ -782,8 +837,8 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 ### Implementation order and status
 
 1. **Corrections to v1.** Superseded: DryDock retired v1 entirely on 8 October 2026 instead of correcting it. v1 survives only as the baselines B1 and B2 (Appendix C).
-2. **Stage 0.** Done on 8 October 2026: the simulator, the two insider sets, the registry and the abstentions are live, and the floor interval with its losses given event is the headline on every token page. Records are issued at the five landmarks, batched for the ForecastLedger and resolved after 24 hours. *Gate: a third party reproduces a sample of published floors from its own archive node. Open.*
-3. **Shadow.** Not started: the sample-size counts of Section 7.5 are not met (876 resolved records, 214 creators, no tradability or liquidity events; Section 8.4), so no channel model is fitted. The scoreboard is live for the committed record.
+2. **Stage 0.** Done on 8 October 2026: the simulator, the two insider sets, the registry and the abstentions are live, and the floor interval with its losses given event is the headline on every token page. Records are issued at the five landmarks, batched for the ForecastLedger and resolved after 24 hours. The ledger is not yet deployed, so no root is on chain (Section 8.6). *Gates: the ledger live and committing within the deadline; a third party reproduces a sample of published floors from its own archive node. Both open.*
+3. **Shadow.** Not started: the sample-size counts of Section 7.5 are not met (876 resolved records, 214 creators, no tradability or liquidity events; Section 8.4), so no channel model is fitted. The scoreboard is built and stays empty until roots are on chain (Section 8.6).
 4. **Stage 1.** Pending. *Gate: H2 and H3.*
 5. **Stage 2.** Pending. *Gate: all five ship criteria of Section 7.6.*
 6. **External review.** Data and code are released with this version and the paper is posted as a working paper. Replication and red-teaming are invited; peer review is pending.
@@ -910,6 +965,10 @@ The design does not solve Sybil identity, and it says so. It bounds what cannot 
 
 &#91;60\] A. Gelman, J. Hill. Data Analysis Using Regression and Multilevel/Hierarchical Models. Cambridge University Press, 2007 (published December 2006).
 
+&#91;61\] Arc. Arc Mainnet Goes Live on September 16, 2026. 5 August 2026. [arc.io blog](https://arc.io/blog/arc-mainnet-goes-live-on-september-16-2026)
+
+&#91;62\] Arc documentation. How to: Monitor Blocklist Compliance. [Arc docs](https://docs.arc.io/integrate/infrastructure/compliance)
+
 ### Verification note
 
 Every reference was checked on 7 October 2026, and the checks the first version listed as open were completed on 8 October 2026, to the differing degrees listed below. A reader should weigh them accordingly.
@@ -925,9 +984,11 @@ The completed checks changed six details. \[24\] is confirmed. \[34\] has a jour
 
 Two cautions still apply. \[14\] is an industry report whose method is described only on its web page. \[11\] is a working paper whose author list differs between versions: the conference paper cited here lists Ding, Luo and Xu; the later SSRN version adds Chen Lin.
 
+References \[61\] and \[62\] were added on 13 October 2026 and read in full that day: \[61\] confirms the mainnet date, fees payable in USDC and sub-second finality, but states no block time and says nothing about privacy, so those facts still rest on \[57\]; \[62\] confirms that the USDC contract reverts transfers from or to blocklisted addresses and that nodes reject a blocklisted sender's transactions.
+
 ## Appendix A. Normative specification
 
-This appendix fixes the definitions an implementer needs. Where it conflicts with the body, the appendix governs. Every default is subject to the sensitivity analyses of Section 7.7. This is version 2.0.3, the specification DryDock runs; entries marked † changed from the first version of the paper, for the reasons given in Section 7.8. Its keccak-256 hash enters every record as `spec_hash`.
+This appendix fixes the definitions an implementer needs. Where it conflicts with the body, the appendix governs. Every default is subject to the sensitivity analyses of Section 7.7. This is version 2.1.0, the specification DryDock runs; entries marked † changed from the first version of the paper, for the reasons given in Section 7.8. Its keccak-256 hash enters every record as `spec_hash`.
 
 ### A.1 Constants and defaults
 
@@ -959,9 +1020,9 @@ This appendix fixes the definitions an implementer needs. Where it conflicts wit
 2. Place the simulator's runtime code, by state override, at a fresh address and at every address that acts in the scenario. Code placed at an address acts as that address: the pool, its hook, the position managers and the token apply their own rules to the real owner.
 3. From the fresh address, buy *B* USDC of the token through its main pool. Record the tokens received, *q*.
 4. **Friction.** Sell *q*. Record the USDC returned.
-5. **Tradability.** For each privileged role in the registry, act as its holder and set each parameter to the worst value the code allows without a timelock longer than *H*. Sell *q*, record. If the token or the hook is not a registered template, record zero, set the flag "unbounded" and the state "unobservable". A scenario with no step returns the friction result.
-6. **Liquidity.** For each position whose owner is neither burned nor a recognised lock (registry), act as the owner and withdraw it: `decreaseLiquidity` and `collect` for a V3 position NFT, `modifyLiquidities` for a V4 position NFT, `burn` and `collect` or a PoolManager unlock for a direct position. Sell *q*, record.
-7. **Insider exit.** For each address in the insider set, in descending order of balance, sell its full balance through the pool. Beyond the first 100 addresses, credit the remaining balance to one further seller by a storage override of the token's balance mapping and sell it in one block. Sell *q*, record. Run once for the lower-bound set and once for the pessimistic set.
+5. **Tradability.** For each privileged role in the registry, act as its holder and set each parameter to the worst value the code allows without a timelock longer than *H*. Sell *q*, record. If the token or the hook is not a registered template, record zero, set the flag "unbounded" and the state "unobservable"; the display shows this state as a warning that the code cannot be checked, never as a grade. A scenario with no step returns the friction result.
+6. **Liquidity.** For each position whose owner is neither burned nor a recognised lock (registry), act as the owner and withdraw it: `decreaseLiquidity` and `collect` for a V3 position NFT, `modifyLiquidities` for a V4 position NFT, `burn` and `collect` or a PoolManager unlock for a direct position. From method 2.1.0 the owner then sells the tokens the withdrawal returned (its balance above what it held before withdrawing), never tokens it already held. Sell *q*, record.
+7. **Insider exit.** For each address in the insider set, in descending order of balance, sell its full balance through the pool. From method 2.1.0 a member that owns a position step 6 would withdraw first withdraws it and then sells everything it holds; such members always sell individually. Beyond the first 100 addresses, credit the remaining balance to one further seller by a storage override of the token's balance mapping and sell it in one block. Sell *q*, record. Run once for the lower-bound set and once for the pessimistic set.
 8. A reverted sale records zero; a reverted event step is recorded as not taken. Each loss given event is 1 minus the recorded amount divided by *B*. If the purchase in step 3 reverts, the state is "unobservable".
 
 ### A.3 Entity resolution
@@ -990,7 +1051,7 @@ leaf = keccak256(keccak256(abi.encode(record)))
 root = merkle_root(all leaves issued since the last root)   // sorted pairs; posted to the ForecastLedger on Arc
 ```
 
-Fractions and probabilities are encoded as parts per million and USDC per 100 as micro-USDC per 100, in fixed-width unsigned integers; `0xffffffff` encodes null. At Stage 0 the probability and score fields are null, and the losses and floors are null unless the state is "rated". The same schema is used at every stage, so the committed history is continuous across upgrades. The ForecastLedger (`0xC63FA005E73bED90443A1Ffc9e363f573F04Cf23`) stores each root with the block range of its records and the block in which it was posted; it accepts roots only from the committer and can be enumerated with `count()` and `commitment(i)`.
+Fractions and probabilities are encoded as parts per million and USDC per 100 as micro-USDC per 100, in fixed-width unsigned integers; `0xffffffff` encodes null. At Stage 0 the probability and score fields are null, and the losses and floors are null unless the state is "rated". The same schema is used at every stage, so the committed history is continuous across upgrades. The ForecastLedger's address, `0xC63FA005E73bED90443A1Ffc9e363f573F04Cf23`, is precomputed: it is the committer's first contract creation and has no code until the committer is funded (Section 8.6). The contract stores nothing per batch. `commit(seq, root, firstBlock, lastBlock, records)` is accepted only from the committer and only for the next batch number in sequence, and emits `Committed(seq, root, firstBlock, lastBlock, records)`; the block of commitment is the receipt's block. A verifier reads every commitment from the contract's events and checks that the sequence has no gap.
 
 ### A.5 Resolution
 
@@ -1091,31 +1152,34 @@ def buy(x, y, usd):
 def sell(x, y, tok):
     a = tok * (1 - phi); out = x * a / (y + a); return out, x - out, y + tok
 q, x1, y1 = buy(x0, g * S, B)
-print('S8 friction: 100 USDC returns %.1f' % sell(x1, y1, q)[0])
+rho0 = sell(x1, y1, q)[0]
+print('S9.2 friction: 100 USDC returns %.1f' % rho0)
 for name, f in (('lower-bound set, 8%', .08), ('pessimistic set, 20%', .20)):
     got, x2, y2 = sell(x1, y1, f * S)
     r = sell(x2, y2, q)[0]
-    print('S8 insider exit as one block, %s: insiders take %.0f USDC (%.0f%% of pool); reference returns %.1f; loss %.1f%%'
+    print('S9.2 insider exit as one block, %s: insiders take %.0f USDC (%.0f%% of pool); reference returns %.1f; loss %.1f%%'
           % (name, got, 100 * got / x1, r, 100 - r))
+    # Integrity Score as amended (Section 5.5): friction once, and before any outcomes the loss given event is the
+    # simulated worst case net of friction, 1 - r / rho0.
     for pi in (.10, .30, .60):
-        print('   assumed pi=%.2f -> Integrity Score %.0f' % (pi, 100 * (1 - pi * (1 - r / 100))))
+        print('   assumed pi=%.2f -> Integrity Score %.0f' % (pi, rho0 * (1 - pi * (1 - r / rho0))))
 # Appendix A.2 sells address by address, largest first. With the split of Section 9.2 (creator 4%, two
 # launch-block buyers 2% each; six fresh wallets 2% each) and fees retained in the pool:
 for name, parts in (('lower-bound set', [.04, .02, .02]), ('pessimistic set', [.04, .02, .02] + [.02] * 6)):
     x, y = x1, y1
     for f in sorted(parts, reverse=True):
         _, x, y = sell(x, y, f * S)
-    print('S8 insider exit address by address, %s: reference returns %.2f' % (name, sell(x, y, q)[0]))
+    print('S9.2 insider exit address by address, %s: reference returns %.2f' % (name, sell(x, y, q)[0]))
 # Uniswap V3 and V4 keep fees outside active liquidity; with fees outside the pool the same example gives:
 def sell_ext(x, y, tok):
     a = tok * (1 - phi); out = x * a / (y + a); return out, x - out, y + a
 def buy_ext(x, y, usd):
     a = usd * (1 - phi); out = y * a / (x + a); return out, x + a, y - out
 q2, xa, ya = buy_ext(x0, g * S, B)
-print('S8 fees outside the pool: friction %.1f' % sell_ext(xa, ya, q2)[0])
+print('S9.2 fees outside the pool: friction %.1f' % sell_ext(xa, ya, q2)[0])
 for f in (.08, .20):
     _, xb, yb = sell_ext(xa, ya, f * S)
-    print('S8 fees outside the pool, exit of %.0f%%: reference returns %.1f' % (100 * f, sell_ext(xb, yb, q2)[0]))
+    print('S9.2 fees outside the pool, exit of %.0f%%: reference returns %.1f' % (100 * f, sell_ext(xb, yb, q2)[0]))
 
 # --- Section 7.5: sample sizes
 z = stats.norm.ppf(.975)
@@ -1126,10 +1190,46 @@ def se_auc(A, n1, n0):  # Hanley and McNeil (1982)
     return np.sqrt((A * (1 - A) + (n1 - 1) * (Q1 - A * A) + (n0 - 1) * (Q2 - A * A)) / (n1 * n0))
 for N in (500, 2000):
     print('S7.5 AUC 0.75, N=%d, prevalence 0.2: 95%% half-width %.3f' % (N, z * se_auc(.75, int(.2 * N), N - int(.2 * N))))
+
+# --- Section 6.3: cost of an aged-wallet farm (gaming class (d), audit finding M1). A wallet passes the history
+# margin with at least one transaction 30 days before the token's creation and at least ten before it, so each
+# farm wallet needs ten transactions it sends itself. Gas price observed on Arc on 13 October 2026 (eth_gasPrice).
+GAS_PRICE_GWEI, TRANSFER_GAS = 20, 21_000
+per_tx = TRANSFER_GAS * GAS_PRICE_GWEI * 1e9 / 1e18  # USDC (Arc's gas token, 18 decimals)
+for wallets in (100, 1000):
+    print('S6.3 aged-wallet farm of %d wallets: %d transactions, %.2f USDC of gas, ready 30 days after its first transaction'
+          % (wallets, 10 * wallets, 10 * wallets * per_tx))
 ```
 
 ## Appendix C. Data, code and v1
 
-**Availability.** The dataset is deposited at Harvard Dataverse under CC BY 4.0: Ghasemlu, F. (2026), *Calibrated Launch Integrity: Forecast Records for Token Launches on Arc, 2026*, https://doi.org/10.7910/DVN/ROY5A4. The code is released under the MIT License at https://github.com/DryDockOrg/launch-integrity-paper, at the tag named in the dataset's description; the paper is released under CC BY 4.0.
+**Availability.** The dataset is deposited at Harvard Dataverse under CC BY 4.0: Ghasemlu, F. (2026), *Calibrated Launch Integrity: Forecast Records for Token Launches on Arc, 2026*, https://doi.org/10.7910/DVN/ROY5A4. The code is released under the MIT License at https://github.com/DryDockOrg/launch-integrity-paper, at the tag named in the dataset's description (this version: `v2026-10-13`); the paper is released under CC BY 4.0.
 
-The paper's repository holds the Markdown and LaTeX editions, the figures' sources, `appendix_b.py`, the analysis code (`analysis/`) with its output, and the dataset (`data/`): every launch on the covered launchpads since 16 September 2026 with whether it traded, every retrospective record with its facts, resolution and v1 scores, and every committed record published at the time of writing. The code that produced the records is a snapshot of DryDock's `lib/integrity` (the facts layer, records and resolver), `scripts/integrity` (discovery, the backfill store and runner) and `scripts/integrity/baselines/v1.ts` (v1's assessment as it ran on 1 and on 7 October 2026, kept runnable for the baselines B1 and B2), copied to `code/` at method 2.0.3, with some identifiers renamed and the RPC endpoints moved to configuration; recomputing 30 published records with the snapshot reproduces every record hash and resolution exactly (`code/README.md`). The retrospective records were produced by the same functions that issue live records; only the source of logs differs (a local store built from public Arc nodes instead of the nodes themselves).
+The paper's repository holds the Markdown and LaTeX editions, the figures' sources, `appendix_b.py`, the analysis code (`analysis/`) with its output, and the dataset (`data/`): every launch on the covered launchpads since 16 September 2026 with whether it traded, every retrospective record with its facts, resolution and v1 scores, and every committed record published at the time of writing. The code that produced the records is a snapshot of DryDock's `lib/integrity` (the facts layer, records and resolver), `scripts/integrity` (discovery, the backfill store and runner) and `scripts/integrity/baselines/v1.ts` (v1's assessment as it ran on 1 and on 7 October 2026, kept runnable for the baselines B1 and B2), copied to `code/` with some identifiers renamed and the RPC endpoints moved to configuration. The folder holds method 2.1.0; the 2.0.3 code that produced the records of Section 8 is the same folder at tag `v2026-10-12`, and recomputing 30 published records with it reproduces every record hash and resolution exactly (`code/README.md`). `data/method-versions.csv.gz` holds the rated records recomputed under 2.0.2 and 2.1.0 (Table D2). The retrospective records were produced by the same functions that issue live records; only the source of logs differs (a local store built from public Arc nodes instead of the nodes themselves).
+
+## Appendix D. Response to the audit of 13 October 2026
+
+An audit of the working paper of 12 October re-ran Appendix B's script and the analysis code from the released repository, matched every number to the digit, and ran its own analysis of the records. It reported four critical findings, six major ones and thirteen errata. Table D1 lists what this version changed for each; its numbers all reproduce from the released data, except that tradability and liquidity equal friction in 99.8% of rated records, not 100%.
+
+| Finding | What changed |
+| --- | --- |
+| C1. H4 tests a bound, not a forecast | Section 8.4 reports the bound-breach rate per grade, the proxies B4, B5 and the raw insider take with clustered intervals, and the floor's margin over B5; H4′ registered (Section 7.9) |
+| C2. H1 cannot discriminate | H1 restated as a mis-specified measure, with the comparators of Table 12; H1′ registered (Section 7.9) |
+| C3. The retrospective H4 is not confirmatory | The abstract and Section 8.4 say the pass followed an outcome-informed fix; Table D2 gives the 2.0.2 result; the pre-registration's first public commit is cited (Section 7.9) |
+| C4. Verifiability described as live | Abstract, Sections 10.2 and 13 and Appendix A.4 describe the ledger as not yet deployed; Section 10.2 adds completeness, uniqueness and version rules; the ledger is now event-only with a strict batch sequence; the site's verification no longer passes a proof whose root is not on Arc |
+| M1. Aged wallets are cheap | Section 6.3 prices the attack (Appendix B, S6.3) and states the regime change from 16 October; results split by regime registered (Section 7.9); contract-wallet nonces noted, not measured |
+| M2. Parking tokens in liquidity raises the floor | Method 2.1.0 (Appendix A.2, steps 6 and 7); Proposition 5 restated; 5 retrospective floors change, no grade (Table D2) |
+| M3. Unverified code abstains silently | Body and appendix aligned; such launches are shown with an explicit warning that their code cannot be checked |
+| M4. The Integrity Score multiplies mismatched quantities | Score redefined with friction applied once and loss given event estimated from outcomes (Section 5.5), registered (Section 7.9) |
+| M5. Repeated records treated as independent | Creator-clustered intervals throughout Section 8.4; gate events counted in launches; results stated for Argus and Tolly |
+| M6. v1's anti-correlation unreported | Reported in Section 8.4 and Table 11 |
+| Errata | Section 9.2's v1 scores (92 and 85, or 93 and 86); D4's direction; D11's count; Section 1.4's range; the abstract's 99%; Section 8.6's mix; Objection 2's table (Table 13); friction as a recovery (Section 5.2); unbounded code (Sections 5.2, 5.6, 6.1, 6.3, 11); H5's 60 days; reference \[18\] cited; Arc facts and the blocklist cited to Arc's own pages \[61, 62\]; Appendix B's labels |
+
+| Method | Records rated | A | B | C | D | E | Monotone |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2.0.2 (before D13's fix) | 876 | 91.2% | 50.0% | 41.3% | 59.4% | 71.7% | No |
+| 2.0.3 (Section 8) | 876 | 3.5% | 11.1% | 24.5% | 51.3% | 68.5% | Yes |
+| 2.1.0 (parked liquidity counted) | 876 | 3.5% | 11.1% | 24.5% | 51.3% | 68.5% | Yes |
+
+*Table D2. Mean realised loss after 24 hours by grade, for the same rated records under three method versions, computed with each version's code (the method-versions file in the dataset). 2.0.2 changes no floor or grade, only the valuation of the held position; 2.1.0 changes 5 floors and no grade.*
+

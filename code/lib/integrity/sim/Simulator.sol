@@ -168,6 +168,15 @@ contract Simulator {
                 try Simulator(step.actor).buy(market, step.amount) {
                     ok = true;
                 } catch {}
+            } else if (step.kind == 4) {
+                try Simulator(step.actor).mark(market) {
+                    ok = true;
+                } catch {}
+            } else if (step.kind == 5) {
+                try Simulator(step.actor).sellSinceMark(market) returns (uint256 got) {
+                    ok = true;
+                    out.eventUsdc += got;
+                } catch {}
             } else if (step.kind == 3) {
                 (int24 lower, int24 upper, uint128 liquidity, bytes32 salt) = abi.decode(step.data, (int24, int24, uint128, bytes32));
                 try Simulator(step.actor).withdrawV4(market, lower, upper, liquidity, salt) {
@@ -196,6 +205,26 @@ contract Simulator {
     }
 
     /** Called on an actor's address: sell its entire token balance through the pool. Returns USDC received. */
+    /// Transient slot holding an actor's token balance at its mark (keccak256("drydock.simulator.mark")).
+    bytes32 private constant MARK_SLOT = 0xa5bd0d9ce8b57c25400507d52b26abb83dde2587d510c97fa2adbc85131d9d30;
+
+    /** Called on a liquidity owner's address before it withdraws, so that only what it withdraws is sold. */
+    function mark(Market calldata market) external {
+        uint256 held = IERC20(market.token).balanceOf(address(this));
+        bytes32 slot = MARK_SLOT;
+        assembly { tstore(slot, held) }
+    }
+
+    /** Sells the tokens that arrived since `mark` (what the withdrawal returned), nothing the owner held before. */
+    function sellSinceMark(Market calldata market) external returns (uint256) {
+        bytes32 slot = MARK_SLOT;
+        uint256 marked;
+        assembly { marked := tload(slot) }
+        uint256 held = IERC20(market.token).balanceOf(address(this));
+        if (held <= marked) return 0;
+        return _swap(market, false, held - marked);
+    }
+
     function sellAll(Market calldata market) external returns (uint256) {
         uint256 balance = IERC20(market.token).balanceOf(address(this));
         require(balance > 0, "empty");
